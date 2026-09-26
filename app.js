@@ -1081,6 +1081,20 @@ function initStandaloneProfilePage() {
       profileAvatar.src = `https://minotar.net/avatar/${encodeURIComponent(nickname)}/80.png`;
     }
 
+    const profileUidBadge = document.getElementById('profileUidBadge');
+    const profileUidVal = document.getElementById('profileUidVal');
+    if (profileUidBadge) {
+      if (prof && prof.uid != null && prof.uid !== '') {
+        profileUidBadge.textContent = `UID: #${prof.uid}`;
+        profileUidBadge.style.display = 'inline-flex';
+      } else {
+        profileUidBadge.style.display = 'none';
+      }
+    }
+    if (profileUidVal) {
+      profileUidVal.textContent = (prof && prof.uid != null && prof.uid !== '') ? `#${prof.uid}` : '#—';
+    }
+
     if (profileSubBadge) {
       if (subActive) {
         profileSubBadge.setAttribute('data-i18n', 'prof_sub_active');
@@ -2174,6 +2188,8 @@ const TRANSLATIONS = {
     prof_reg_pass_lbl: "Пароль (минимум 6 символов)",
     prof_btn_register: "Зарегистрироваться",
     prof_player: "Игрок",
+    prof_uid_label: "UID Аккаунта",
+    prof_uid_desc: "Уникальный номер пользователя",
     prof_sub_label: "Статус подписки",
     prof_sub_inactive: "Не активна",
     prof_sub_active: "Активна",
@@ -2234,8 +2250,9 @@ const TRANSLATIONS = {
     admin_maint_btn_on: "Включить техработы",
     admin_maint_btn_off: "Отключить техработы",
     admin_users_title: "👥 Управление пользователями",
-    admin_users_search_ph: "Поиск по никнейму или email...",
+    admin_users_search_ph: "Поиск по UID, никнейму или email...",
     admin_refresh_btn: "Обновить",
+    admin_col_uid: "UID",
     admin_col_user: "Пользователь",
     admin_col_sub: "Подписка",
     admin_col_hwid: "HWID",
@@ -2444,6 +2461,8 @@ const TRANSLATIONS = {
     prof_reg_pass_lbl: "Password (min 6 characters)",
     prof_btn_register: "Create Account",
     prof_player: "Player",
+    prof_uid_label: "Account UID",
+    prof_uid_desc: "Unique user identifier",
     prof_sub_label: "Subscription Status",
     prof_sub_inactive: "Inactive",
     prof_sub_active: "Active",
@@ -2509,8 +2528,9 @@ const TRANSLATIONS = {
     admin_maint_btn_on: "Enable Maintenance",
     admin_maint_btn_off: "Disable Maintenance",
     admin_users_title: "👥 User Management",
-    admin_users_search_ph: "Search by nickname or email...",
+    admin_users_search_ph: "Search by UID, nickname or email...",
     admin_refresh_btn: "Refresh",
+    admin_col_uid: "UID",
     admin_col_user: "User",
     admin_col_sub: "Subscription",
     admin_col_hwid: "HWID",

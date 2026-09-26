@@ -622,6 +622,19 @@
       border: 1px solid var(--border-subtle);
     }
 
+    .uid-tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(157, 78, 221, 0.16);
+      border: 1px solid rgba(199, 125, 255, 0.4);
+      color: var(--p-light, #c77dff);
+      font-family: monospace;
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
     .action-btn-group {
       display: inline-flex;
       gap: 6px;
@@ -998,7 +1011,7 @@
           <div class="search-row">
             <div class="search-input-wrap">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" id="adminUserSearch" placeholder="Поиск по никнейму или email..." data-i18n-placeholder="admin_users_search_ph">
+              <input type="text" id="adminUserSearch" placeholder="Поиск по UID, никнейму или email..." data-i18n-placeholder="admin_users_search_ph">
             </div>
             <button type="button" class="btn-refresh-custom" id="btnRefreshUsers">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
@@ -1011,6 +1024,7 @@
           <table class="admin-users-table">
             <thead>
               <tr>
+                <th style="width: 75px;" data-i18n="admin_col_uid">UID</th>
                 <th data-i18n="admin_col_user">Пользователь</th>
                 <th data-i18n="admin_col_sub">Подписка</th>
                 <th data-i18n="admin_col_hwid">HWID</th>
@@ -1021,7 +1035,7 @@
             </thead>
             <tbody id="adminUsersTbody">
               <tr>
-                <td colspan="6" data-i18n="admin_loading_users" style="text-align:center; padding: 2.5rem; color: var(--text-muted);">Загрузка списка пользователей...</td>
+                <td colspan="7" data-i18n="admin_loading_users" style="text-align:center; padding: 2.5rem; color: var(--text-muted);">Загрузка списка пользователей...</td>
               </tr>
             </tbody>
           </table>
@@ -1267,11 +1281,12 @@
         if (!tbody) return;
 
         if (users.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2.5rem; color:var(--text-muted);">${t('admin_users_not_found')}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:2.5rem; color:var(--text-muted);">${t('admin_users_not_found')}</td></tr>`;
           return;
         }
 
         tbody.innerHTML = users.map(u => {
+          const uidVal = (u.uid != null && u.uid !== '') ? `#${u.uid}` : '—';
           const nick = u.mc_nickname || u.email?.split('@')[0] || t('prof_player');
           const email = u.email || '—';
           const isOwner = email.toLowerCase() === 'gorwok.h@yandex.ru' || email.toLowerCase() === 'fakeface52@mail.ru';
@@ -1291,6 +1306,9 @@
 
           return `
             <tr class="user-row ${isOwner ? 'owner-row' : ''}" data-id="${u.id}">
+              <td>
+                <span class="uid-tag">${escapeHtml(uidVal)}</span>
+              </td>
               <td>
                 <div class="user-cell">
                   <img class="user-avatar" src="https://minotar.net/avatar/${encodeURIComponent(nick)}/40.png" alt="${nick}">
@@ -1355,7 +1373,9 @@
             renderUsersTable(allUsers);
             return;
           }
+          const cleanQ = q.replace(/^#/, '');
           const filtered = allUsers.filter(u => 
+            (u.uid != null && (String(u.uid) === cleanQ || ('#' + u.uid).toLowerCase().includes(q) || String(u.uid).includes(cleanQ))) ||
             (u.mc_nickname && u.mc_nickname.toLowerCase().includes(q)) ||
             (u.email && u.email.toLowerCase().includes(q)) ||
             (u.hwid && u.hwid.toLowerCase().includes(q))
