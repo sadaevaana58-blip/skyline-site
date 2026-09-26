@@ -20,6 +20,15 @@ if (isSupabaseConfigured) {
   try {
     supabaseClient = window.supabase.createClient(cleanUrl, SUPABASE_CONFIG.anonKey.trim());
     console.log("Supabase успешно подключен к проекту:", cleanUrl);
+    
+    // Auto-forward recovery state to reset-password.html if on another page
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        if (!window.location.pathname.includes('reset-password.html')) {
+          window.location.replace('reset-password.html' + window.location.search + window.location.hash);
+        }
+      }
+    });
   } catch (err) {
     console.error("Ошибка инициализации Supabase:", err);
   }

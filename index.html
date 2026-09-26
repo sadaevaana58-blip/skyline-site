@@ -19,6 +19,17 @@
   <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- Auto-redirect to reset-password.html if landing from recovery email -->
+  <script>
+    (function() {
+      var h = window.location.hash || '';
+      var s = window.location.search || '';
+      if (h.indexOf('type=recovery') !== -1 || (h.indexOf('access_token=') !== -1 && h.indexOf('type=signup') === -1)) {
+        window.location.replace('reset-password.html' + s + h);
+      }
+    })();
+  </script>
+
   <style>
     /* ==========================================================================
        CYBER-PURPLE LUXURY DESIGN SYSTEM (index.html)
