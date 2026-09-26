@@ -1557,7 +1557,7 @@ const checkoutAlert = document.getElementById('checkout-alert');
 const ANYPAY_PROJECT_ID = '18155';
 
 // Discord Purchase Link
-const DISCORD_PURCHASE_URL = 'https://discord.gg/8nbq9S54Vh';
+const DISCORD_PURCHASE_URL = 'https://discord.gg/WkkpHvRyXU';
 
 // Direct Buy Plan click -> Open Discord
 document.querySelectorAll('.btn-buy-plan').forEach(btn => {
