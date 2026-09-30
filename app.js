@@ -1547,14 +1547,14 @@ if (document.readyState === 'loading') {
 
 checkInitialSession();
 
-// Direct Client Download via Supabase Cloud Storage (skyline.exe launcher)
+// Direct Client Download via Supabase Cloud Storage (installer.exe)
 const btnDownloadClient = document.getElementById('btnDownloadClient') || document.getElementById('btn-download-client');
 if (btnDownloadClient) {
   btnDownloadClient.addEventListener('click', () => {
-    const downloadUrl = 'https://cvincrtbliwmjlxloczi.supabase.co/storage/v1/object/public/downloads/skyline.exe';
+    const downloadUrl = 'https://cvincrtbliwmjlxloczi.supabase.co/storage/v1/object/public/dw/installer.exe';
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.download = 'skyline.exe';
+    link.download = 'installer.exe';
     link.target = '_blank';
     document.body.appendChild(link);
     link.click();
@@ -2203,7 +2203,7 @@ const TRANSLATIONS = {
     prof_admin_gen_label: "⚡ Панель создания ключей (Администратор)",
     prof_admin_gen_btn: "+ Создать ключ",
     prof_dl_title: "Скачать Skyline Launcher",
-    prof_dl_sub: "Официальный лаунчер чита (skyline.exe)",
+    prof_dl_sub: "Официальный инсталлер (installer.exe)",
     prof_btn_admin: "⚡ Админ-панель",
     prof_btn_reset_hwid: "⟳ Сбросить привязку HWID",
     prof_btn_logout: "Выйти из аккаунта",
@@ -2476,7 +2476,7 @@ const TRANSLATIONS = {
     prof_admin_gen_label: "⚡ Key Creation Panel (Admin)",
     prof_admin_gen_btn: "+ Create Key",
     prof_dl_title: "Download Skyline Launcher",
-    prof_dl_sub: "Official cheat launcher (skyline.exe)",
+    prof_dl_sub: "Official installer (installer.exe)",
     prof_btn_admin: "⚡ Admin Panel",
     prof_btn_reset_hwid: "⟳ Reset HWID Binding",
     prof_btn_logout: "Log Out",

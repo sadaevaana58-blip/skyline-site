@@ -521,10 +521,28 @@
       color: var(--text-muted);
     }
 
+    .user-uid-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(157, 78, 221, 0.16);
+      border: 1px solid rgba(199, 125, 255, 0.45);
+      color: var(--p-light);
+      font-family: monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 10px rgba(157, 78, 221, 0.4);
+      box-shadow: 0 0 12px rgba(157, 78, 221, 0.15);
+      vertical-align: middle;
+    }
+
     /* Info Grid */
     .profile-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 1.25rem;
       margin-bottom: 1.5rem;
     }
@@ -1065,7 +1083,10 @@
             <img id="profileAvatar" class="avatar-img" src="https://minotar.net/avatar/MHF_Steve/80.png" alt="Minecraft Skin">
           </div>
           <div class="user-info-text">
-            <h2 id="profileUsername" data-i18n="prof_player">Игрок</h2>
+            <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+              <h2 id="profileUsername" data-i18n="prof_player">Игрок</h2>
+              <span class="user-uid-pill" id="profileUidBadge" style="display:none;">UID: #—</span>
+            </div>
             <p id="profileUserEmail">user@example.com</p>
           </div>
         </div>
@@ -1074,6 +1095,12 @@
 
         <!-- Info Grid -->
         <div class="profile-grid">
+          <div class="profile-card">
+            <div class="card-label" data-i18n="prof_uid_label">UID Аккаунта</div>
+            <div class="card-status-badge active" id="profileUidVal" style="font-family: monospace; font-size: 1.15rem; font-weight: 800; background: rgba(157,78,221,0.16); border: 1px solid rgba(199,125,255,0.4); color: var(--p-light);">#—</div>
+            <div class="card-detail" data-i18n="prof_uid_desc">Уникальный номер пользователя</div>
+          </div>
+
           <div class="profile-card">
             <div class="card-label" data-i18n="prof_sub_label">Статус подписки</div>
             <div class="card-status-badge inactive" id="profileSubBadge" data-i18n="prof_sub_inactive">Не активна</div>
@@ -1124,7 +1151,7 @@
           <button type="button" class="btn-client-download" id="btnDownloadClient">
             <div class="dl-text">
               <span class="dl-title" data-i18n="prof_dl_title">Скачать Skyline Launcher</span>
-              <span class="dl-sub" data-i18n="prof_dl_sub">Официальный лаунчер (skyline.exe)</span>
+              <span class="dl-sub" data-i18n="prof_dl_sub">Официальный инсталлер (installer.exe)</span>
             </div>
             <span class="dl-tag">.EXE</span>
           </button>
