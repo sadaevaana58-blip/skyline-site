@@ -19,7 +19,6 @@ let supabaseClient = null;
 if (isSupabaseConfigured) {
   try {
     supabaseClient = window.supabase.createClient(cleanUrl, SUPABASE_CONFIG.anonKey.trim());
-    console.log("Supabase успешно подключен к проекту:", cleanUrl);
     
     // Auto-forward recovery state to reset-password.html if on another page
     supabaseClient.auth.onAuthStateChange((event, session) => {
