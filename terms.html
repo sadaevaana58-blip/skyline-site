@@ -6,908 +6,248 @@
   <meta name="description" content="Пользовательское соглашение Skyline — условия использования чит-клиента, политика конфиденциальности и правила лицензирования.">
   <title>Skyline | Пользовательское соглашение</title>
   
-  <link rel="icon" type="image/jpeg" href="shape_logo.jpg">
-  <link rel="shortcut icon" type="image/jpeg" href="shape_logo.jpg">
-  <link rel="apple-touch-icon" href="shape_logo.jpg">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="shortcut icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
 
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+  <!-- Launcher Font & Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <style>
-    :root {
-      --p-primary: #9d4edd;
-      --p-primary-hover: #b366ff;
-      --p-glow: rgba(157, 78, 221, 0.45);
-      --p-deep: #5a189a;
-      --p-electric: #7b2cbf;
-      --p-light: #c77dff;
-      --p-soft: #e0aaff;
-      --p-muted: #9f8bc2;
-
-      --bg-dark: #07060b;
-      --bg-card: rgba(20, 14, 32, 0.7);
-      --bg-card-hover: rgba(32, 22, 52, 0.85);
-
-      --border-subtle: rgba(157, 78, 221, 0.22);
-      --border-active: rgba(199, 125, 255, 0.5);
-
-      --text-main: #f8f6fc;
-      --text-muted: #a39bb5;
-      --text-dim: #706884;
-
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      --font-heading: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    .legal-page-wrap {
+      max-width: 900px;
+      margin: calc(var(--header-height) + 24px) auto 60px auto;
+      padding: 0 20px;
     }
-
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-user-select: none !important;
-      -moz-user-select: none !important;
-      -ms-user-select: none !important;
-      user-select: none !important;
-      -webkit-touch-callout: none !important;
-    }
-
-    input, textarea, [contenteditable="true"] {
-      -webkit-user-select: text !important;
-      -moz-user-select: text !important;
-      -ms-user-select: text !important;
-      user-select: text !important;
-    }
-
-    img {
-      -webkit-user-drag: none !important;
-      user-drag: none !important;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      color-scheme: dark;
-    }
-
-    /* Ultra-Custom Cyber Neon Scrollbar */
-    * {
-      scrollbar-width: thin;
-      scrollbar-color: var(--p-primary, #9d4edd) var(--bg-dark, #07090e);
-    }
-    ::-webkit-scrollbar {
-      width: 11px;
-      height: 11px;
-    }
-    ::-webkit-scrollbar-button {
-      display: none !important;
-      width: 0 !important;
-      height: 0 !important;
-    }
-    ::-webkit-scrollbar-track {
-      background: linear-gradient(180deg, var(--bg-surface, #0f081a) 0%, var(--bg-dark, #07090e) 100%);
-      border-left: 1px solid var(--border-subtle);
-      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: linear-gradient(180deg, var(--p-light) 0%, var(--p-primary) 35%, var(--p-electric) 70%, var(--p-deep) 100%);
-      border-radius: 999px;
-      border: 2px solid var(--bg-dark, #07090e);
-      box-shadow: 0 0 16px var(--p-glow), inset 0 1px 2px rgba(255, 255, 255, 0.6);
-      transition: all 0.25s ease;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: linear-gradient(180deg, #ffffff 0%, var(--p-light) 25%, var(--p-primary-hover) 65%, var(--p-electric) 100%);
-      box-shadow: 0 0 28px var(--p-glow), 0 0 12px var(--p-light), inset 0 1px 3px #ffffff;
-      border-color: rgba(7, 9, 14, 0.6);
-    }
-    ::-webkit-scrollbar-thumb:active {
-      background: linear-gradient(180deg, #ffffff 0%, var(--p-light) 35%, var(--p-primary) 70%, var(--p-deep) 100%);
-      box-shadow: 0 0 35px var(--p-glow), 0 0 16px var(--p-light), inset 0 1px 3px #ffffff;
-    }
-    ::-webkit-scrollbar-corner {
-      background: var(--bg-dark, #07090e);
-    }
-
-    @keyframes pageFadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    body {
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(ellipse 70% 40% at 50% 0%, var(--border-subtle) 0%, transparent 65%),
-        radial-gradient(ellipse 50% 35% at 85% 30%, var(--border-subtle) 0%, transparent 60%);
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-      color: var(--text-main);
-      font-family: var(--font-sans);
-      line-height: 1.65;
-      overflow-x: hidden;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-      opacity: 1;
-      animation: pageFadeIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1), transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    body.page-transition-exit {
-      opacity: 0 !important;
-      transform: translateY(-6px) !important;
-      pointer-events: none;
-    }
-
-    /* Ambient Glow Lights (Balanced Atmospheric Lighting) */
-    .ambient-glow-1, .ambient-glow-2 {
-      position: fixed;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .ambient-glow-1 {
-      top: -16%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 1000px;
-      height: 750px;
-      background: radial-gradient(ellipse at center, var(--theme-glow-1, #9d4edd) 0%, var(--p-electric) 35%, transparent 70%);
-      filter: blur(115px);
-      opacity: 0.55;
-      animation: floatGlow 20s ease-in-out infinite alternate;
-    }
-    .ambient-glow-2 {
-      top: 25%;
-      right: -8%;
-      width: 850px;
-      height: 850px;
-      background: radial-gradient(circle, var(--theme-glow-2, #7b2cbf) 0%, var(--p-deep) 40%, transparent 70%);
-      filter: blur(125px);
-      opacity: 0.45;
-      animation: floatGlow 24s ease-in-out infinite alternate -6s;
-    }
-
-    /* Full-Page Cyber Grid with Squares & Ambient Gradient */
-    .cyber-grid-bg {
-      position: fixed;
-      inset: 0;
-      background-image: 
-        linear-gradient(to right, var(--border-subtle) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--border-subtle) 1px, transparent 1px);
-      background-size: 55px 55px;
-      mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.55) 75%, transparent 100%);
-      -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.55) 75%, transparent 100%);
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.65;
-    }
-
-    @keyframes floatGlow {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(40px, 30px) scale(1.1); }
-      100% { transform: translate(-30px, 50px) scale(0.95); }
-    }
-
-    /* Header */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-      padding: 1rem 0;
-      background: rgba(7, 6, 11, 0.75);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border-subtle);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-    }
-
-    .nav-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      font-family: var(--font-heading);
-      font-weight: 900;
-      font-size: 1.35rem;
-      letter-spacing: 0.08em;
-      color: #fff;
-    }
-
-    .logo-img {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      object-fit: cover;
-      border: 1.5px solid var(--border-active);
-      box-shadow: 0 0 18px var(--p-glow);
-    }
-
-    nav ul {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      list-style: none;
-      background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-card) 100%);
-      padding: 6px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border-active);
-      backdrop-filter: blur(20px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 25px var(--p-glow);
-    }
-
-    .nav-link-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-family: var(--font-sans);
-      font-size: 0.9rem;
-      font-weight: 600;
-      padding: 8px 16px;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-    }
-    .nav-link-btn:hover {
-      color: #fff;
-      background: linear-gradient(135deg, var(--border-subtle) 0%, var(--border-active) 100%);
-      box-shadow: 0 0 15px var(--p-glow);
-    }
-
-    .lang-switcher {
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border-subtle);
-      border-radius: 999px;
-      padding: 3px 6px;
-      backdrop-filter: blur(8px);
-    }
-    .lang-btn {
-      background: transparent;
-      border: 0;
-      color: var(--text-muted);
-      font-family: var(--font-sans);
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .lang-btn:hover { color: #fff; }
-    .lang-btn.active {
-      background: linear-gradient(135deg, var(--p-primary), var(--p-electric));
-      color: var(--p-contrast-text, #fff);
-      box-shadow: 0 0 10px var(--p-glow);
-    }
-    .lang-divider {
-      color: rgba(255, 255, 255, 0.2);
-      font-size: 0.72rem;
-    }
-
-    /* Terms Layout */
-    .terms-page-wrapper {
-      flex: 1;
-      max-width: 860px;
-      width: 100%;
-      margin: 8rem auto 4rem auto;
-      padding: 0 1.5rem;
-    }
-
-    .page-back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: transparent;
-      border: none;
-      color: var(--p-soft);
-      font-family: var(--font-heading);
-      font-weight: 700;
-      font-size: 0.92rem;
-      cursor: pointer;
-      margin-bottom: 2rem;
-      transition: all 0.2s ease;
-    }
-    .page-back-btn:hover {
-      color: #fff;
-      transform: translateX(-4px);
-    }
-
-    .terms-main-card {
+    .legal-card {
       background: var(--bg-card);
-      border: 1.5px solid var(--border-subtle);
-      border-radius: 28px;
-      padding: 3rem;
-      backdrop-filter: blur(24px);
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 50px var(--p-glow);
-    }
-
-    .terms-main-card h1 {
-      font-family: var(--font-heading);
-      font-size: clamp(2.2rem, 4vw, 3rem);
-      font-weight: 900;
-      letter-spacing: -0.03em;
-      margin-bottom: 0.4rem;
-      line-height: 1.15;
-    }
-    .terms-main-card h1 span {
-      background: linear-gradient(135deg, #ffffff 10%, var(--p-soft) 50%, var(--p-primary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .terms-meta {
-      font-size: 0.86rem;
-      color: var(--p-muted);
-      margin-bottom: 2.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .terms-main-card h2 {
-      font-family: var(--font-heading);
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #fff;
-      margin: 2.8rem 0 1rem 0;
-      padding-left: 0.8rem;
-      border-left: 3.5px solid var(--p-light);
-    }
-
-    .terms-main-card h3 {
-      font-family: var(--font-heading);
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--p-soft);
-      margin: 1.8rem 0 0.6rem 0;
-    }
-
-    .terms-main-card p {
-      margin-bottom: 1rem;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.75;
-    }
-
-    .terms-main-card ul, .terms-main-card ol {
-      margin: 0.5rem 0 1.25rem 1.5rem;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-    .terms-main-card li {
-      margin-bottom: 0.5rem;
-      line-height: 1.65;
-    }
-    .terms-main-card li strong {
-      color: #fff;
-    }
-
-    .terms-card {
-      background: var(--bg-surface);
-      border: 1.5px solid var(--border-subtle);
-      border-radius: 18px;
-      padding: 1.5rem 1.8rem;
-      margin: 1.5rem 0;
-    }
-    .terms-card p:last-child, .terms-card ul:last-child {
-      margin-bottom: 0;
-    }
-
-    .terms-warn {
-      background: rgba(239, 68, 68, 0.12);
-      border: 1.5px solid rgba(239, 68, 68, 0.35);
-      border-radius: 18px;
-      padding: 1.5rem 1.8rem;
-      margin: 1.5rem 0;
-    }
-    .terms-warn strong {
-      color: #fca5a5;
-    }
-
-    .terms-link {
-      color: var(--p-light);
-      cursor: pointer;
-      text-decoration: none;
-      font-weight: 700;
-      transition: color 0.2s ease;
-    }
-    .terms-link:hover {
-      color: #fff;
-      text-decoration: underline;
-    }
-
-    .terms-divider {
-      border: none;
-      border-top: 1px solid var(--border-subtle);
-      margin: 3rem 0;
-    }
-
-    .terms-footer-block {
-      margin-top: 3.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border-subtle);
-      font-size: 0.84rem;
-      color: var(--text-dim);
-      text-align: center;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-md);
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
       line-height: 1.7;
     }
-
-    /* Footer */
-    footer {
-      padding: 3rem 0;
-      border-top: 1px solid var(--border-subtle);
-      background: transparent;
-      text-align: center;
+    .legal-card h1 {
+      font-size: 28px;
+      font-family: var(--font-bold);
+      margin-bottom: 8px;
     }
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 1.5rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .footer-links button {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 0.88rem;
-    .footer-links button:hover { color: var(--p-soft); }
-
-    .footer-links-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 1.25rem;
-    }
-    .footer-contact-link {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 0.88rem;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-      transition: color 0.2s ease, transform 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .footer-contact-link:hover {
+    .legal-card h2 {
+      font-size: 18px;
+      font-family: var(--font-bold);
+      margin-top: 32px;
+      margin-bottom: 12px;
       color: #fff;
-      text-shadow: 0 0 12px var(--p-glow);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
     }
-    .footer-contact-link svg {
-      color: var(--p-light);
-      transition: transform 0.2s ease;
+    .legal-card h3 {
+      font-size: 14.5px;
+      font-family: var(--font-bold);
+      margin-top: 18px;
+      margin-bottom: 8px;
+      color: var(--accent-color);
     }
-    .footer-contact-link:hover svg {
-      transform: scale(1.15);
-      color: #fff;
+    .legal-card p {
+      font-size: 13.5px;
+      color: var(--text-color-grayed);
+      margin-bottom: 12px;
     }
-    .footer-divider-dot {
-      color: var(--border-active);
-      font-size: 0.75rem;
-      opacity: 0.5;
+    .legal-card ul {
+      margin: 10px 0 16px 20px;
+      color: var(--text-color-grayed);
+      font-size: 13.5px;
     }
-    .footer-meta-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 0.85rem;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      margin-top: 1rem;
+    .legal-card li {
+      margin-bottom: 6px;
     }
-    .footer-plat-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 6px;
-      background: rgba(157, 78, 221, 0.08);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      font-size: 0.76rem;
-      font-family: monospace;
+    .terms-box {
+      background: #0d0d10;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-sm);
+      padding: 16px;
+      margin: 14px 0;
     }
-    .footer-plat-badge strong {
-      color: var(--p-light);
-    }
-    .copyright { font-size: 0.8rem; color: var(--text-dim); }
-
-    @media (max-width: 640px) {
-      .terms-page-wrapper { margin-top: 6.5rem; }
-      .terms-main-card { padding: 2rem 1.25rem; }
+    .terms-warn {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: var(--border-radius-sm);
+      padding: 16px;
+      margin: 14px 0;
+      color: #fca5a5;
     }
   </style>
 </head>
 <body>
+  <!-- Ambient Plasma Glowing Orbs -->
+  <div class="ambient-glow-layer" aria-hidden="true">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+  </div>
 
-  <div class="ambient-glow-1"></div>
-  <div class="ambient-glow-2"></div>
-  <div class="cyber-grid-bg"></div>
+  <!-- Navigation Header -->
+  <header class="site-header" id="mainHeader">
+    <div class="header-inner">
+      <div class="header-brand" onclick="location.href='index.html'" style="cursor:pointer;">
+        <img class="header-logo-img" src="assets/logo.png" alt="Skyline Logo">
+        <div class="header-brand-title">
+          <span>SKYLINE</span>
+          <span class="header-badge">Terms of Service</span>
+        </div>
+      </div>
 
-  <!-- Sticky Header -->
-  <header>
-    <div class="nav-container">
-      <button type="button" class="logo" onclick="location.href='index.html'" aria-label="SKYLINE">
-        <img class="logo-img" src="shape_logo.jpg" alt="Skyline Logo">
-        SKYLINE
-      </button>
-      <nav>
-        <ul>
-          <li><button type="button" class="nav-link-btn" onclick="location.href='index.html'" data-i18n="nav_home">Главная</button></li>
-          <li><button type="button" class="nav-link-btn" onclick="location.href='index.html#features'" data-i18n="nav_features">Особенности</button></li>
-          <li><button type="button" class="nav-link-btn" onclick="location.href='index.html#pricing'" data-i18n="nav_pricing">Цены</button></li>
-          <li><button type="button" class="nav-link-btn" onclick="location.href='profile.html'" data-i18n="nav_profile_long">Личный кабинет</button></li>
-          <li class="lang-switch-item">
-            <div class="lang-switcher" role="group" aria-label="Language Selector">
-              <button type="button" class="lang-btn active" data-lang="ru">RU</button>
-              <span class="lang-divider">/</span>
-              <button type="button" class="lang-btn" data-lang="en">EN</button>
-            </div>
-          </li>
-        </ul>
+      <nav class="header-nav">
+        <button type="button" onclick="location.href='index.html'" data-i18n="nav_home">Главная</button>
+        <button type="button" onclick="location.href='profile.html'" data-i18n="nav_profile_long">Личный кабинет</button>
       </nav>
+
+      <div class="header-actions">
+        <!-- Language Switcher -->
+        <div class="lang-switcher" role="group" aria-label="Language Selector">
+          <button type="button" class="lang-btn active" data-lang="ru">RU</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+        </div>
+
+        <button type="button" class="btn-outline" onclick="location.href='index.html'">
+          <i class="bi bi-arrow-left"></i>
+          <span data-i18n="nav_to_home">На главную</span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <!-- Terms Content -->
-  <div class="terms-page-wrapper">
-
-    <button type="button" class="page-back-btn" onclick="location.href='index.html'" data-i18n="prof_back">
-      ← Вернуться на главную
+  <!-- Main Legal Content -->
+  <main class="legal-page-wrap">
+    <button type="button" class="page-back-btn" onclick="location.href='index.html'">
+      <i class="bi bi-arrow-left"></i>
+      <span data-i18n="prof_back">Вернуться на главную</span>
     </button>
 
-    <div class="terms-main-card">
-      <!-- Russian Language View -->
+    <div class="legal-card">
       <div class="lang-view" data-lang-view="ru">
-        <h1>Пользовательское <span>Соглашение</span></h1>
-        <p class="terms-meta">Последнее обновление: 26 сентября 2026 г. &nbsp;·&nbsp; Версия 2.0</p>
+        <span class="section-tag">Правовая информация</span>
+        <h1>Пользовательское <span>соглашение</span></h1>
+        <p style="color:var(--text-color-grayed-48); font-size:12px; margin-bottom:20px;">
+          Дата вступления в силу: 14 августа 2026 г. • Редакция 1.0
+        </p>
 
-        <!-- 1. Общие положения -->
         <h2>1. Общие положения</h2>
-        <p>Настоящее Пользовательское соглашение (далее — «Соглашение») регулирует отношения между администрацией проекта <strong>Skyline</strong> (далее — «Администрация», «мы») и физическим лицом (далее — «Пользователь», «вы»), использующим веб-сайт <span class="terms-link" onclick="location.href='index.html'">Skyline</span>, программное обеспечение чит-клиента Skyline для Minecraft и связанные сервисы (далее — «Сервис»).</p>
-        <p>Регистрируясь на сайте, приобретая подписку или скачивая клиент Skyline, вы подтверждаете, что полностью прочитали, поняли и безоговорочно принимаете условия настоящего Соглашения.</p>
+        <p><strong>1.1.</strong> Настоящее Пользовательское соглашение (далее — «Соглашение») регулирует отношения между администрацией проекта <strong>Skyline</strong> (далее — «Администрация», «мы») и любым физическим лицом (далее — «Пользователь», «вы»), использующим сайт, программный комплекс чита Skyline для Minecraft и сопутствующие сервисы (далее — «Сервис»).</p>
+        <p><strong>1.2.</strong> Регистрация на сайте, оплата подписки или скачивание файлов чита Skyline означает полное и безоговорочное принятие (акцепт) условий настоящего Соглашения.</p>
 
-        <!-- 2. Описание сервиса -->
-        <h2>2. Описание сервиса</h2>
-        <p>Skyline — это приватное программное обеспечение (чит-клиент) для игры Minecraft версии 1.21.4 на платформе Fabric Loader, предоставляющее модули автоматизации и игрового преимущества: Killaura, ESP/Wallhack, Velocity, обходы серверных античитов (GrimAC, Vulcan, Matrix, Polar), настраиваемый HUD и сопутствующие функции.</p>
-        <div class="terms-card">
-          <p>Сервис включает:</p>
-          <ul>
-            <li>Веб-сайт для регистрации, авторизации и управления лицензией;</li>
-            <li>Систему лицензионных ключей для активации доступа;</li>
-            <li>Скачивание клиентского лаунчера (skyline.exe);</li>
-            <li>Систему привязки аппаратного идентификатора (HWID) для защиты от взлома.</li>
-          </ul>
-        </div>
+        <h2>2. Описание Сервиса</h2>
+        <p><strong>2.1.</strong> Skyline — приватный чит-клиент нового поколения для Minecraft Fabric 1.21.4, предоставляющий продвинутые функции автоматизации боя и визуальные модули: Killaura, Wallhack/ESP, Velocity 0%, обходы античитов (GrimAC, Vulcan, Matrix, Polar), настраиваемый HUD и HWID защиту.</p>
 
-        <!-- 3. Регистрация и аккаунт -->
-        <h2>3. Регистрация и аккаунт</h2>
+        <h2>3. Регистрация и безопасность аккаунта</h2>
         <p><strong>3.1.</strong> Для использования Сервиса необходимо зарегистрироваться, указав действующий адрес электронной почты и игровой никнейм Minecraft.</p>
-        <p><strong>3.2.</strong> Вы несёте полную ответственность за сохранность данных своего аккаунта (логин, пароль) и за все действия, совершённые с его использованием.</p>
-        <p><strong>3.3.</strong> Передача аккаунта третьим лицам строго запрещена.</p>
-        <p><strong>3.4.</strong> Администрация оставляет за собой право заблокировать или удалить аккаунт при нарушении условий настоящего Соглашения без возврата средств.</p>
+        <p><strong>3.2.</strong> Вы несёте полную ответственность за сохранность данных своего аккаунта и за все действия, совершенные под вашей учетной записью.</p>
+        <p><strong>3.3.</strong> Передача аккаунта или ключей третьим лицам строго запрещена.</p>
 
-        <!-- 4. Подписка и оплата -->
         <h2>4. Тарифы и оплата</h2>
-        <p><strong>4.1.</strong> Доступ к функционалу чита Skyline предоставляется на платной основе по тарифным планам:</p>
-        <div class="terms-card">
+        <div class="terms-box">
           <ul>
+            <li><strong>Сброс HWID</strong> — 100 ₽ (разовая услуга отвязки устройства)</li>
             <li><strong>30 Дней</strong> — 150 ₽</li>
             <li><strong>1 Год (365 дней)</strong> — 250 ₽</li>
             <li><strong>Навсегда (Lifetime)</strong> — 400 ₽</li>
-            <li><strong>Сброс HWID</strong> — 100 ₽ (разовая услуга при смене ПК)</li>
           </ul>
         </div>
-        <p><strong>4.2.</strong> Оплата производится через проверенные платёжные агрегаторы и маркетплейсы с использованием банковских карт, СБП, электронных кошельков или криптовалюты.</p>
-        <p><strong>4.3.</strong> После успешной оплаты лицензионный ключ выдаётся моментально и активируется в личном кабинете Пользователя.</p>
-        <p><strong>4.4.</strong> Цены указаны в российских рублях (₽) и могут корректироваться Администрацией в одностороннем порядке. Изменение цен не затрагивает уже активные подписки.</p>
+        <p><strong>4.1.</strong> Оплата производится через сертифицированные платёжные шлюзы и маркетплейсы. Лицензия выдаётся моментально после подтверждения транзакции.</p>
 
-        <!-- 5. Привязка HWID -->
-        <h2>5. Привязка HWID</h2>
-        <p><strong>5.1.</strong> При первом запуске чита Skyline в игре, система автоматически привязывает уникальный аппаратный идентификатор вашего компьютера (HWID) к вашему профилю.</p>
-        <p><strong>5.2.</strong> Одна лицензия может одновременно работать только на одном устройстве.</p>
-        <p><strong>5.3.</strong> Для переноса лицензии на новое устройство необходимо активировать ключ «Сброс HWID» (100 ₽).</p>
+        <h2>5. Привязка к оборудованию (HWID)</h2>
+        <p><strong>5.1.</strong> При первом запуске лаунчера и чита Skyline, система генерирует уникальный аппаратный идентификатор вашего компьютера (HWID) и связывает его с вашим профилем.</p>
+        <p><strong>5.2.</strong> Лицензия может одновременно использоваться только на одном устройстве. Для смены ПК требуется ключ сброса HWID.</p>
 
-        <hr class="terms-divider">
-
-        <!-- 6. Политика конфиденциальности -->
-        <h2>6. Политика конфиденциальности</h2>
-
-        <h3>6.1. Какие данные мы обрабатываем</h3>
-        <div class="terms-card">
-          <ul>
-            <li><strong>Email-адрес</strong> — для авторизации и восстановления доступа;</li>
-            <li><strong>Игровой никнейм Minecraft</strong> — для привязки лицензии к игровому профилю;</li>
-            <li><strong>Аппаратный идентификатор (HWID)</strong> — для верификации запуска и защиты лицензии от несанкционированного доступа;</li>
-            <li><strong>IP-адрес</strong> — для защиты API от DDoS-атак и спама.</li>
-          </ul>
-        </div>
-
-        <h3>6.2. Как мы используем данные</h3>
-        <ul>
-          <li>Для верификации лицензии и проверки запуска чита;</li>
-          <li>Для защиты программного продукта от взлома и реверс-инжиниринга;</li>
-          <li>Для технической поддержки пользователей.</li>
-        </ul>
-
-        <h3>6.3. Передача данных третьим лицам</h3>
-        <p>Мы <strong>не продаём и не передаём</strong> персональные данные Пользователей третьим лицам, за исключением случаев, предусмотренных применимым законодательством.</p>
-
-        <h3>6.4. Хранение данных</h3>
-        <p>Данные хранятся на защищённых облачных серверах Supabase с шифрованием трафика по протоколу TLS/SSL. Мы не собираем личные файлы пользователя, переписки или конфиденциальную информацию с вашего компьютера.</p>
-
-        <h3>6.5. Удаление данных</h3>
-        <p>Вы имеете право запросить полное удаление вашего профиля и данных, обратившись в службу поддержки через Telegram или Discord.</p>
-
-        <hr class="terms-divider">
-
-        <!-- 7. Возврат средств -->
-        <h2>7. Политика возврата средств</h2>
-        <p><strong>7.1.</strong> Поскольку Сервис предоставляет цифровой продукт (лицензионные ключи и программное обеспечение), активируемый моментально, возврат средств после выдачи и активации ключа <strong>не осуществляется</strong>.</p>
-        <p><strong>7.2.</strong> Исключения составляют случаи двойного списания средств за один заказ или технической невозможности предоставить ключ по вине Администрации при обращении в течение 24 часов с момента покупки.</p>
-        <p><strong>7.3.</strong> Блокировка аккаунта пользователя на игровых серверах сторонней администрацией не является основанием для возврата денежных средств.</p>
-
-        <hr class="terms-divider">
-
-        <!-- 8. Ограничения использования -->
-        <h2>8. Ограничения использования и защита ПО</h2>
+        <h2>6. Защита ПО и запрещённые действия</h2>
         <p>Пользователю категорически запрещается:</p>
         <ul>
-          <li>Декомпилировать, модифицировать, реверс-инжинирить или анализировать код лаунчера и чита Skyline;</li>
-          <li>Распространять, перепродавать или публично выкладывать бинарные файлы чита;</li>
-          <li>Передавать лицензионные ключи или доступ к профилю третьим лицам;</li>
-          <li>Намеренно создавать паразитическую нагрузку на сервера авторизации (DDoS, брутфорс);</li>
-          <li><strong>Взламывать, «крякать», обходить защиту лицензирования или HWID привязку чита Skyline;</strong></li>
-          <li><strong>Создавать, распространять или использовать эмуляторы сервера, патчи, кряки или генераторы ключей;</strong></li>
-          <li><strong>Публиковать в сети закрытый код, дампы памяти или сетевые сигнатуры чита.</strong></li>
+          <li>Декомпилировать, модифицировать, взламывать, реверс-инжинирить или анализировать код лаунчера и чита Skyline;</li>
+          <li>Создавать эмуляторы авторизации, распространять кряки или дампы памяти;</li>
+          <li>Публично выкладывать бинарные файлы клиента;</li>
+          <li>Совершать атаки на сервера авторизации и API.</li>
         </ul>
 
-        <h3>8.1. Последствия нарушений</h3>
         <div class="terms-warn">
-          <p>При выявлении попыток взлома, распространения кряков или передачи аккаунта Администрация применяет следующие меры <strong>без права на обжалование и без возврата средств</strong>:</p>
-          <ul>
-            <li><strong>Аннулирование подписки</strong> — моментальный отзыв лицензии;</li>
-            <li><strong>Перманентная блокировка профиля</strong>;</li>
-            <li><strong>HWID Blacklist</strong> — постоянный запрет на запуск чита с устройства нарушителя;</li>
-            <li><strong>Отзыв всех связанных ключей</strong>.</li>
-          </ul>
+          <p><strong>Последствия нарушений:</strong> Моментальное аннулирование подписки, перманентный бан профиля и занесение HWID в черный список без возврата средств.</p>
         </div>
 
-        <!-- 9. Ответственность -->
-        <h2>9. Отказ от ответственности и риски блокировок</h2>
-        <p><strong>9.1.</strong> Сервис предоставляется на условиях «как есть» (as is). Администрация не гарантирует бесперебойную работу чита в случаях глобальных обновлений античитов или самого Minecraft.</p>
-        <p><strong>9.2.</strong> <strong>Игровые риски:</strong> Использование модификаций и читов на публичных серверах Minecraft может нарушать правила конкретных игровых проектов. Администрация Skyline <strong>не несёт ответственности</strong> за любые санкции (баны, муты, вайпы), наложенные на игровой аккаунт пользователя администрацией третьих серверов. Вы принимаете эти риски на себя.</p>
-        <p><strong>9.3.</strong> Максимальная ответственность Администрации ограничена стоимостью фактически оплаченного периода лицензии.</p>
+        <h2>7. Политика возврата средств</h2>
+        <p>Поскольку Сервис предоставляет цифровой лицензионный контент, активируемый моментально, возврат средств после выдачи и активации ключа не осуществляется.</p>
 
-        <!-- 10. Изменения -->
-        <h2>10. Изменение условий</h2>
-        <p>Администрация оставляет за собой право вносить изменения в условия Соглашения. Актуальная редакция публикуется на данной странице. Продолжение использования Сервиса означает принятие обновленных условий.</p>
-
-        <!-- 11. Контакты -->
-        <h2>11. Контактная информация</h2>
-        <p>По всем вопросам работы Сервиса и лицензирования обращайтесь:</p>
-        <div class="terms-card">
+        <h2>8. Контакты службы поддержки</h2>
+        <div class="terms-box">
           <ul>
-            <li><strong>Telegram Поддержка:</strong> <span class="terms-link" onclick="window.open('https://t.me/x00dll','_blank')">t.me/x00dll</span></li>
-            <li><strong>Discord:</strong> <span class="terms-link" onclick="window.open('https://discord.gg/WkkpHvRyXU','_blank')">discord.gg/WkkpHvRyXU</span></li>
-            <li><strong>Email:</strong> <span class="terms-link" onclick="location.href='mailto:skylinevsupport@gmail.com'">skylinevsupport@gmail.com</span></li>
+            <li><strong>Telegram:</strong> <a href="https://t.me/x00dll" target="_blank" style="color:var(--accent-color);">@x00dll</a></li>
+            <li><strong>Email:</strong> <a href="mailto:skylinevsupport@gmail.com" style="color:var(--accent-color);">skylinevsupport@gmail.com</a></li>
+            <li><strong>Discord:</strong> <a href="https://discord.gg/WkkpHvRyXU" target="_blank" style="color:var(--accent-color);">discord.gg/WkkpHvRyXU</a></li>
           </ul>
-        </div>
-
-        <div class="terms-footer-block">
-          © 2026 Skyline Client. Все права защищены.<br>
-          Minecraft является торговой маркой Mojang Synergies AB. Проект Skyline не аффилирован с Mojang.
         </div>
       </div>
 
-      <!-- English Language View -->
       <div class="lang-view" data-lang-view="en" style="display:none;">
+        <span class="section-tag">Legal Terms</span>
         <h1>Terms of <span>Service</span></h1>
-        <p class="terms-meta">Last Updated: August 14, 2026 &nbsp;·&nbsp; Version 1.0</p>
+        <p style="color:var(--text-color-grayed-48); font-size:12px; margin-bottom:20px;">
+          Effective Date: August 14, 2026 • Version 1.0
+        </p>
 
-        <!-- 1. General Provisions -->
         <h2>1. General Provisions</h2>
-        <p>These Terms of Service (hereinafter "Terms") govern the relationship between the administration of the <strong>Skyline</strong> project (hereinafter "Administration", "we", "us") and any individual (hereinafter "User", "you") accessing the website, the Skyline software for Minecraft, and associated services (hereinafter "Service").</p>
-        <p>By registering on the website, purchasing a subscription, or downloading the Skyline client, you confirm that you have fully read, understood, and agreed to these Terms.</p>
+        <p>These Terms of Service govern the relationship between Skyline and any individual accessing the website or software. By registering or downloading Skyline, you confirm full agreement to these terms.</p>
 
-        <!-- 2. Description of Service -->
         <h2>2. Description of Service</h2>
-        <p>Skyline is a private cheat client software for Minecraft version 1.21.4 on the Fabric Loader platform, providing combat automation and gameplay features: Killaura, Wallhack/ESP, Velocity 0%, anti-cheat bypasses (GrimAC, Vulcan, Matrix, Polar), adaptive HUD, and related utilities.</p>
-        <div class="terms-card">
-          <p>The Service includes:</p>
-          <ul>
-            <li>Website for registration, authentication, and license management;</li>
-            <li>License key system for subscription activation;</li>
-            <li>Client launcher download (skyline.exe);</li>
-            <li>Hardware Identification (HWID) binding and anti-tamper system.</li>
-          </ul>
-        </div>
+        <p>Skyline is a private cheat client for Minecraft Fabric 1.21.4 offering combat enhancements, visual modules (ESP/Chams), and anti-cheat bypasses.</p>
 
-        <!-- 3. Registration & Account -->
-        <h2>3. Registration & Account</h2>
-        <p><strong>3.1.</strong> To use the Service, you must register by providing a valid email address and a Minecraft in-game nickname.</p>
-        <p><strong>3.2.</strong> You bear full responsibility for safeguarding your account credentials (login, password) and for all actions taken under your account.</p>
-        <p><strong>3.3.</strong> Transferring accounts to third parties is strictly prohibited.</p>
-        <p><strong>3.4.</strong> The Administration reserves the right to suspend or terminate any account violating these Terms without refund.</p>
+        <h2>3. Licensing & HWID Protection</h2>
+        <p>A license is bound to a single computer hardware identifier (HWID). To transfer the license to a different PC, an HWID Reset key is required.</p>
 
-        <!-- 4. Subscription & Payment -->
-        <h2>4. Pricing & Payment</h2>
-        <p><strong>4.1.</strong> Access to Skyline features is offered on a paid subscription basis:</p>
-        <div class="terms-card">
-          <ul>
-            <li><strong>30 Days</strong> — 150 ₽</li>
-            <li><strong>1 Year (365 Days)</strong> — 250 ₽</li>
-            <li><strong>Lifetime (Full Access)</strong> — 400 ₽</li>
-            <li><strong>HWID Reset</strong> — 100 ₽ (one-time service for device migration)</li>
-          </ul>
-        </div>
-        <p><strong>4.2.</strong> Payments are processed via verified payment gateways and market platforms supporting cards, SBP, e-wallets, and cryptocurrency.</p>
-        <p><strong>4.3.</strong> Upon successful payment, a license key is automatically generated and delivered to the User.</p>
-        <p><strong>4.4.</strong> Prices are displayed in Russian Rubles (₽) and may be adjusted unilaterally by the Administration. Price changes will not affect active paid subscriptions.</p>
-
-        <!-- 5. HWID Binding -->
-        <h2>5. HWID Binding</h2>
-        <p><strong>5.1.</strong> Upon the first launch of the Skyline client in Minecraft, the mod automatically binds the unique hardware identifier (HWID) of your computer to your profile.</p>
-        <p><strong>5.2.</strong> One subscription can only be active on one computer at any given time.</p>
-        <p><strong>5.3.</strong> To transfer your license to a new PC, an HWID reset key must be applied.</p>
-
-        <hr class="terms-divider">
-
-        <!-- 6. Privacy Policy -->
-        <h2>6. Privacy Policy</h2>
-        <h3>6.1. Data We Process</h3>
-        <div class="terms-card">
-          <ul>
-            <li><strong>Email Address</strong> — for authentication and account recovery;</li>
-            <li><strong>Minecraft In-Game Nickname</strong> — for license association;</li>
-            <li><strong>Hardware Identifier (HWID)</strong> — for security and software license protection;</li>
-            <li><strong>IP Address</strong> — logged automatically for security and anti-abuse verification.</li>
-          </ul>
-        </div>
-
-        <h3>6.2. How We Use Data</h3>
-        <ul>
-          <li>To provide, maintain, and verify the Service and licenses;</li>
-          <li>To protect the client software against cracking, dumping, and tampering;</li>
-          <li>To provide customer support.</li>
-        </ul>
-
-        <h3>6.3. Third-Party Sharing</h3>
-        <p>We <strong>do not sell or share</strong> User personal data with third parties, except as required by law.</p>
-
-        <h3>6.4. Data Storage</h3>
-        <p>Data is securely stored on Supabase cloud servers with end-to-end TLS/SSL encryption. We do not access or collect personal files, browsing histories, or private documents from your PC.</p>
-
-        <h3>6.5. Data Deletion</h3>
-        <p>You have the right to request full deletion of your account and personal data by contacting support via Telegram or Discord.</p>
-
-        <hr class="terms-divider">
-
-        <!-- 7. Refund Policy -->
-        <h2>7. Refund Policy</h2>
-        <p><strong>7.1.</strong> As the Service delivers digital software immediately activated upon purchase, all sales are <strong>final and non-refundable</strong> once a license key is issued or redeemed.</p>
-        <p><strong>7.2.</strong> In-game sanctions or server bans applied to your Minecraft account do not constitute grounds for a refund.</p>
-
-        <hr class="terms-divider">
-
-        <!-- 8. Usage Restrictions -->
-        <h2>8. Usage Restrictions & Anti-Tamper</h2>
-        <p>Users are strictly prohibited from:</p>
-        <ul>
-          <li>Decompiling, modifying, or reverse engineering the Skyline client or launcher code;</li>
-          <li>Redistributing, reselling, or publicly sharing client binaries;</li>
-          <li>Transferring license keys or account credentials to third parties;</li>
-          <li>Intentionally overloading Service servers (DDoS, brute-force requests, etc.);</li>
-          <li><strong>Cracking, bypassing, or attempting to circumvent the licensing system, HWID protection, or any security mechanism;</strong></li>
-          <li><strong>Developing, distributing, or selling cracks, patches, keygens, or server emulators;</strong></li>
-          <li><strong>Publicly publishing license keys or proprietary client signatures.</strong></li>
-        </ul>
-
-        <h3>8.1. Violation Consequences</h3>
-        <div class="terms-warn">
-          <p>If cracking attempts, unauthorized distribution, or violations of Section 8 are detected, the Administration reserves the right to enforce the following sanctions <strong>without prior notice and without refund</strong>:</p>
-          <ul>
-            <li><strong>Immediate subscription deactivation</strong> — license revoked;</li>
-            <li><strong>Permanent account termination</strong>;</li>
-            <li><strong>HWID Blacklisting</strong> — permanent prevention of launching from the device;</li>
-            <li><strong>Revocation of all linked license keys</strong>.</li>
-          </ul>
-        </div>
-
-        <!-- 9. Limitation of Liability -->
-        <h2>9. Limitation of Liability & Game Risks</h2>
-        <p><strong>9.1.</strong> The Service is provided "AS IS". The Administration does not guarantee uninterrupted operation across future anti-cheat updates.</p>
-        <p><strong>9.2.</strong> <strong>Gaming Risks:</strong> Using cheat modifications on third-party Minecraft servers may violate their specific server rules. The Skyline Administration <strong>shall not be liable</strong> for any player account bans, mutes, or losses imposed by third-party server administrators. You assume full responsibility for your in-game actions.</p>
-        <p><strong>9.3.</strong> Maximum aggregate liability is limited to the amount paid by the User for the current subscription period.</p>
-
-        <!-- 10. Modifications -->
-        <h2>10. Modifications to Terms</h2>
-        <p>The Administration may update these Terms at any time. Continued use of the Service signifies acceptance of updated Terms.</p>
-
-        <!-- 11. Contact Info -->
-        <h2>11. Contact Information</h2>
-        <p>For questions regarding the Service, billing, or licensing, contact us at:</p>
-        <div class="terms-card">
-          <ul>
-            <li><strong>Telegram Support:</strong> <span class="terms-link" onclick="window.open('https://t.me/x00dll','_blank')">t.me/x00dll</span></li>
-            <li><strong>Discord:</strong> <span class="terms-link" onclick="window.open('https://discord.gg/WkkpHvRyXU','_blank')">discord.gg/WkkpHvRyXU</span></li>
-            <li><strong>Email:</strong> <span class="terms-link" onclick="location.href='mailto:skylinevsupport@gmail.com'">skylinevsupport@gmail.com</span></li>
-          </ul>
-        </div>
-
-        <div class="terms-footer-block">
-          © 2026 Skyline Client. All rights reserved.<br>
-          Minecraft is a trademark of Mojang Synergies AB. This project is not affiliated with Mojang.
-        </div>
+        <h2>4. Prohibited Conduct</h2>
+        <p>Reverse engineering, distributing cracks, cracking licensing checks, or sharing accounts is strictly forbidden and results in immediate permanent ban and HWID blacklisting without refund.</p>
       </div>
     </div>
-
-  </div>
+  </main>
 
   <!-- Footer -->
-  <footer>
-    <div class="footer-links">
-      <button type="button" onclick="location.href='index.html'" data-i18n="footer_home">Главная</button>
-      <button type="button" onclick="location.href='index.html#features'" data-i18n="footer_features">Особенности</button>
-      <button type="button" onclick="location.href='index.html#pricing'" data-i18n="footer_pricing">Тарифы</button>
-      <button type="button" onclick="location.href='profile.html'" data-i18n="footer_profile">Личный кабинет</button>
-      <button type="button" onclick="location.href='terms.html'" data-i18n="footer_terms">Пользовательское соглашение</button>
-      <button type="button" onclick="location.href='privacy.html'" data-i18n="footer_privacy">Политика конфиденциальности</button>
-    </div>
-
-        <!-- Support Channels Row -->
-    <div class="footer-links-row" style="margin-top: 1rem;">
-      <button type="button" class="footer-contact-link" onclick="window.open('https://t.me/x00dll','_blank')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
-        <span>Telegram Поддержка: @x00dll</span>
-      </button>
-      <span class="footer-divider-dot">•</span>
-      <button type="button" class="footer-contact-link" onclick="location.href='mailto:skylinevsupport@gmail.com'">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <span>Email Поддержки: skylinevsupport@gmail.com</span>
-      </button>
-      <span class="footer-divider-dot">•</span>
-      <button type="button" class="footer-contact-link" onclick="location.href='mailto:gorwok.h@yandex.ru'">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        <span>Email: gorwok.h@yandex.ru</span>
-      </button>
-      <span class="footer-divider-dot">•</span>
-      <button type="button" class="footer-contact-link" onclick="window.open('https://discord.gg/WkkpHvRyXU','_blank')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-        <span>Discord Сообщество</span>
-      </button>
-    </div>
-
-    <!-- Verification & Copyright Row -->
-    <div class="footer-meta-row">
-      <span class="footer-plat-badge">Код проверки кассы: <strong>PLAT</strong></span>
-      <span class="footer-divider-dot">•</span>
-      <span class="copyright" data-i18n="footer_copy">
-        &copy; 2026 Skyline. Все права защищены. Minecraft является торговой маркой Mojang Synergies AB. Данный сайт не аффилирован с Mojang.
-      </span>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand" onclick="location.href='index.html'" style="cursor:pointer;">
+        <img src="assets/logo.png" alt="Skyline" style="width:20px; height:20px; border-radius:6px;">
+        <span style="font-family:var(--font-bold); font-size:13px;">SKYLINE CLIENT</span>
+      </div>
+      <div class="footer-links">
+        <a href="index.html" data-i18n="footer_home">Главная</a>
+        <a href="profile.html" data-i18n="footer_profile">Личный кабинет</a>
+        <a href="privacy.html" data-i18n="footer_privacy">Политика конфиденциальности</a>
+      </div>
+      <div class="footer-copy" data-i18n="footer_copy">
+        &copy; 2026 Skyline. Все права защищены.
+      </div>
     </div>
   </footer>
 
-  <script src="app.js?v=20260815_terms_cyber"></script>
+  <!-- Anime.js & Page Animations -->
+  <script src="assets/anime.min.js"></script>
+  <script src="animations.js"></script>
+
+  <script src="app.js"></script>
+  <script>
+    (function initLangToggle() {
+      const savedLang = localStorage.getItem('skyline_lang') || localStorage.getItem('shape_lang') || 'ru';
+      function setLang(lang) {
+        document.querySelectorAll('.lang-view').forEach(view => {
+          view.style.display = view.getAttribute('data-lang-view') === lang ? 'block' : 'none';
+        });
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+        });
+        localStorage.setItem('skyline_lang', lang);
+      }
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => setLang(btn.getAttribute('data-lang')));
+      });
+      setLang(savedLang);
+    })();
+  </script>
 </body>
 </html>

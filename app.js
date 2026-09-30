@@ -125,9 +125,13 @@ let currentUser = null;
 // Helper: Show alert banner
 function showAlert(el, message, type = 'error') {
   if (!el) return;
-  el.textContent = message;
+  const iconClass = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+  const cleanMsg = message.replace(/^[✓✕⛔❌✅⚠⚡]\s*/, '');
+  el.innerHTML = `<i class="bi ${iconClass}"></i> <span>${cleanMsg}</span>`;
   el.className = `alert-msg ${type}`;
-  el.style.display = 'block';
+  el.style.display = 'flex';
+  el.style.alignItems = 'center';
+  el.style.gap = '8px';
 }
 
 function clearAlert(el) {
@@ -218,7 +222,7 @@ function updateHeaderAuth(user) {
       btnOpenProfile.style.display = 'inline-flex';
       const nickEl = document.getElementById('nav-user-nick');
       if (nickEl) {
-        nickEl.textContent = user.user_metadata?.mc_nickname || user.email?.split('@')[0] || 'Кабинет';
+        nickEl.textContent = window.getLangString ? window.getLangString('nav_profile') : 'Кабинет';
       }
     }
   } else {
@@ -329,7 +333,7 @@ function renderProfileData() {
   // Show client download box for anyone with active subscription (and admin)
   const dlBox = document.getElementById('profile-download-box');
   if (dlBox) {
-    dlBox.style.display = (subActive || isAdmin) ? 'block' : 'none';
+    dlBox.style.display = (subActive || isAdmin) ? 'flex' : 'none';
   }
 }
 
@@ -577,7 +581,7 @@ if (formRedeemKey) {
             }
             renderProfileData();
             inputLicenseKey.value = '';
-            showAlert(profileAlert, `✓ Поздравляем! Подписка успешно активирована (${subText})!`, 'success');
+            showAlert(profileAlert, `Поздравляем! Подписка успешно активирована (${subText})!`, 'success');
           }
           await fetchAndRenderProfile();
         }
@@ -592,14 +596,14 @@ if (formRedeemKey) {
           localStorage.setItem('shape_demo_user', JSON.stringify(currentUser));
           renderProfileData();
           inputLicenseKey.value = '';
-          showAlert(profileAlert, '✓ Ключ сброса применен! HWID сброшен. (Демо-режим)', 'success');
+          showAlert(profileAlert, 'Ключ сброса применен! HWID сброшен. (Демо-режим)', 'success');
         } else {
           currentUser.user_metadata.subscription_active = true;
           currentUser.user_metadata.subscription_until = 'Навсегда (Lifetime)';
           localStorage.setItem('shape_demo_user', JSON.stringify(currentUser));
           renderProfileData();
           inputLicenseKey.value = '';
-          showAlert(profileAlert, '✓ Ключ успешно активирован! (Демо-режим)', 'success');
+          showAlert(profileAlert, 'Ключ успешно активирован! (Демо-режим)', 'success');
         }
       }, 500);
     }
@@ -713,7 +717,7 @@ if (btnAdminGenKey) {
           const finalCode = createdKey || newKeyCode;
           adminLastKeyDisplay.style.display = 'block';
           adminLastKeyDisplay.setAttribute('data-key', finalCode);
-          adminLastKeyDisplay.innerHTML = `✓ Ключ создан (нажмите для копирования): <strong>${finalCode}</strong>`;
+          adminLastKeyDisplay.innerHTML = `<i class="bi bi-key-fill"></i> Ключ создан (нажмите для копирования): <strong>${finalCode}</strong>`;
           await copyTextToClipboard(finalCode);
           showAlert(profileAlert, `Ключ ${finalCode} успешно создан и скопирован в буфер обмена!`, 'success');
         }
@@ -723,7 +727,7 @@ if (btnAdminGenKey) {
     } else {
       adminLastKeyDisplay.style.display = 'block';
       adminLastKeyDisplay.setAttribute('data-key', newKeyCode);
-      adminLastKeyDisplay.innerHTML = `✓ Ключ создан (нажмите для копирования): <strong>${newKeyCode}</strong>`;
+      adminLastKeyDisplay.innerHTML = `<i class="bi bi-key-fill"></i> Ключ создан (нажмите для копирования): <strong>${newKeyCode}</strong>`;
       await copyTextToClipboard(newKeyCode);
       showAlert(profileAlert, `Ключ ${newKeyCode} скопирован в буфер обмена!`, 'success');
     }
@@ -777,7 +781,7 @@ if (btnResetHwid) {
         } else {
           currentUser.user_metadata.hwid = null;
           renderProfileData();
-          showAlert(profileAlert, '✓ Привязка HWID успешно сброшена! Новый ПК привяжется автоматически при первом запуске игры.', 'success');
+          showAlert(profileAlert, 'Привязка HWID успешно сброшена! Новый ПК привяжется автоматически при первом запуске игры.', 'success');
         }
       } catch (err) {
         showAlert(profileAlert, 'Ошибка отправки запроса на сброс HWID.', 'error');
@@ -788,12 +792,12 @@ if (btnResetHwid) {
         currentUser.user_metadata.hwid = 'Не привязан (Сброшено)';
         localStorage.setItem('shape_demo_user', JSON.stringify(currentUser));
         renderProfileData();
-        showAlert(profileAlert, '✓ Привязка HWID успешно сброшена! (Демо-режим)', 'success');
+        showAlert(profileAlert, 'Привязка HWID успешно сброшена! (Демо-режим)', 'success');
       }, 400);
     }
 
     btnResetHwid.disabled = false;
-    btnResetHwid.innerHTML = '<span>⟳</span> Сбросить привязку HWID';
+    btnResetHwid.innerHTML = '<i class="bi bi-arrow-counterclockwise"></i> <span>Сбросить привязку HWID</span>';
   });
 }
 
@@ -960,7 +964,7 @@ function initStandaloneProfilePage() {
       if (supabaseClient) await supabaseClient.auth.signOut();
       if (authView) authView.classList.add('active');
       if (profileView) profileView.classList.remove('active');
-      showAlert(authAlert, '⛔ Ваш аккаунт заблокирован администратором!', 'error');
+      showAlert(authAlert, 'Ваш аккаунт заблокирован администратором!', 'error');
       return;
     }
 
@@ -1027,7 +1031,7 @@ function initStandaloneProfilePage() {
     if (btnAdminPanel) btnAdminPanel.style.display = isAdmin ? 'inline-flex' : 'none';
     if (adminGenBox) adminGenBox.style.display = isAdmin ? 'block' : 'none';
     if (btnResetHwid) btnResetHwid.style.display = isAdmin ? 'inline-flex' : 'none';
-    if (dlBox) dlBox.style.display = (subActive || isAdmin) ? 'block' : 'none';
+    if (dlBox) dlBox.style.display = (subActive || isAdmin) ? 'flex' : 'none';
   }
 
   // Update standalone on auth change
@@ -1294,7 +1298,7 @@ function initStandaloneProfilePage() {
                 });
               }
             }
-            showAlert(profileAlert, `✓ Ключ ${generatedCode} успешно сохранен в базе данных!`, 'success');
+            showAlert(profileAlert, `Ключ ${generatedCode} успешно сохранен в базе данных!`, 'success');
           }
         } catch (err) {
           showAlert(profileAlert, 'Ошибка связи с базой данных.', 'error');
@@ -1376,14 +1380,14 @@ function initStandaloneProfilePage() {
               } else {
                 currentUser.user_metadata.hwid = null;
                 renderStandaloneProfile(currentUser);
-                showAlert(profileAlert, '✓ ' + (window.getLangString ? window.getLangString('toast_reset_hwid_success').replace('{nick}', currentUser.user_metadata?.mc_nickname || '') : 'HWID сброшен.'), 'success');
+                showAlert(profileAlert, (window.getLangString ? window.getLangString('toast_reset_hwid_success').replace('{nick}', currentUser.user_metadata?.mc_nickname || '') : 'HWID сброшен.'), 'success');
               }
             } catch (err) {
               showAlert(profileAlert, 'Ошибка связи с сервером при сбросе HWID.', 'error');
             }
           }
           btnResetHwid.disabled = false;
-          btnResetHwid.innerHTML = `<span>⟳</span> ${window.getLangString ? window.getLangString('prof_btn_reset_hwid') : 'Сбросить привязку HWID'}`;
+          btnResetHwid.innerHTML = `<i class="bi bi-arrow-counterclockwise"></i> <span>${window.getLangString ? window.getLangString('prof_btn_reset_hwid') : 'Сбросить привязку HWID'}</span>`;
         }
       });
     });
@@ -1544,12 +1548,12 @@ if (formCheckout) {
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('payment') === 'success') {
   setTimeout(() => {
-    alert('🎉 Оплата успешно завершена! Ваш ключ активируется автоматически. Если у вас возникнут вопросы — напишите нам в Discord!');
+    alert('Оплата успешно завершена! Ваш ключ активируется автоматически. Если у вас возникнут вопросы — напишите нам в Discord!');
     window.history.replaceState({}, document.title, window.location.pathname);
   }, 600);
 } else if (urlParams.get('payment') === 'fail') {
   setTimeout(() => {
-    alert('❌ Оплата была отменена или не завершена. Попробуйте снова или выберите другой способ оплаты.');
+    alert('Оплата была отменена или не завершена. Попробуйте снова или выберите другой способ оплаты.');
     window.history.replaceState({}, document.title, window.location.pathname);
   }, 600);
 }
@@ -1562,26 +1566,20 @@ function initComparisonSlider() {
   const layerAfter = document.getElementById('layerAfter');
   const slider = document.getElementById('comparisonSlider');
   const hint = document.getElementById('comparisonHint');
-  const afterImg = layerAfter ? layerAfter.querySelector('img') : null;
 
   if (!frame || !layerAfter || !slider) return;
 
   let isDragging = false;
 
-  function updateAfterImgWidth() {
-    if (afterImg && frame) {
-      afterImg.style.width = `${frame.offsetWidth}px`;
-    }
-  }
-
-  window.addEventListener('resize', updateAfterImgWidth);
-  updateAfterImgWidth();
-
   function setSliderPosition(xRatio) {
     const clamped = Math.max(0, Math.min(1, xRatio));
     const percent = (clamped * 100).toFixed(2);
-    layerAfter.style.width = `${percent}%`;
+    const rightInset = (100 - clamped * 100).toFixed(2);
+
+    layerAfter.style.clipPath = `inset(0 ${rightInset}% 0 0)`;
+    layerAfter.style.webkitClipPath = `inset(0 ${rightInset}% 0 0)`;
     slider.style.left = `${percent}%`;
+
     if (hint && !frame.classList.contains('has-interacted')) {
       frame.classList.add('has-interacted');
     }
@@ -1634,23 +1632,23 @@ function initComparisonSlider() {
     }
   });
 
+  // Default initial position at 50%
+  setSliderPosition(0.5);
+
   // Smooth intro reveal animation when scrolling into view
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          updateAfterImgWidth();
-          layerAfter.style.transition = 'width 0.85s cubic-bezier(0.25, 1, 0.5, 1)';
+          layerAfter.style.transition = 'clip-path 0.85s cubic-bezier(0.25, 1, 0.5, 1), -webkit-clip-path 0.85s cubic-bezier(0.25, 1, 0.5, 1)';
           slider.style.transition = 'left 0.85s cubic-bezier(0.25, 1, 0.5, 1)';
           setSliderPosition(0.5);
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.2 });
+    }, { threshold: 0.15 });
 
     observer.observe(frame);
-  } else {
-    setSliderPosition(0.5);
   }
 }
 
@@ -2001,6 +1999,7 @@ const TRANSLATIONS = {
   ru: {
     // Navigation
     nav_home: "Главная",
+    nav_versions: "Версии",
     nav_features: "Особенности",
     nav_pricing: "Цены",
     nav_comparison: "Сравнение",
@@ -2012,6 +2011,14 @@ const TRANSLATIONS = {
     nav_discord: "Discord",
     nav_to_home: "На главную",
     nav_to_profile: "В профиль",
+    nav_admin_panel: "Админ-панель",
+
+    // Versions Section
+    versions_tag: "Поддерживаемые версии",
+    versions_title: "Готовые сборки под любой сервер",
+    versions_desc: "Клиент запускается прямо из официального лаунчера Skyline в один клик. Никакой сложной ручной установки.",
+    versions_card_desc: "Флагманская тестовая сборка с ранним доступом к новейшим эвристическим обходам GrimAC 2.0, Matrix, NoSlow, улучшенным Chams, Wallhack и адаптивным AimAssist под 1.21.4.",
+    versions_btn_launch: "Запуск в лаунчере",
 
     // Hero Section
     hero_title: "Приватный Чит Нового Поколения <span>Skyline</span>",
@@ -2033,6 +2040,10 @@ const TRANSLATIONS = {
     feat_3_desc: "Кастомные модули движения (NoSlow, Velocity 0%, Step, Spider, FastBreak) с оптимизацией под обходы GrimAC, Vulcan, Matrix и Polar.",
     feat_4_title: "HWID Защита и Cloud Конфиги",
     feat_4_desc: "Привязка к вашему ПК исключает риск взлома или утечки аккаунта. Быстрое сохранение, загрузка и переключение конфигов чита в облаке.",
+    feat_5_title: "Бесшовный лаунчер",
+    feat_5_desc: "Автоматическое обновление файлов клиента, кэширование ресурсов и быстрая проверка лицензии прямо при запуске игры.",
+    feat_6_title: "Высокая производительность",
+    feat_6_desc: "Аппаратное ускорение рендеринга и полное отсутствие просадок FPS даже при включённых сложных Chams и визуалах.",
 
     // Pricing Section
     price_tag: "Приобретение",
@@ -2062,14 +2073,20 @@ const TRANSLATIONS = {
     plan_life_f2: "Обходы античитов (GrimAC, Vulcan, Matrix)",
     plan_life_f3: "Облачные конфиги и темы",
     plan_life_f4: "Пожизненные обновления чита",
-    featured_ribbon: "⭐ Популярный",
+    featured_ribbon: "<i class='bi bi-star-fill'></i> Популярный",
     btn_buy: "Купить",
+    plan_buy_btn: "Купить",
+    plan_buy_lifetime_btn: "Купить Lifetime",
+    plan_period_once: "разово",
+    plan_period_30d: "/ 30 дней",
+    plan_period_365d: "/ 365 дней",
+    plan_period_lifetime: "навсегда",
 
     // Comparison & FAQ
     comp_tag: "Преимущество",
     comp_title: "Играй <span>с преимуществом</span>",
     comp_subtitle: "Сравните: ограниченный обзор обычного игрока и полный контроль поля боя с читом Skyline (ESP, Wallhack, HUD, Chams).",
-    comp_hint: "◂ Тяните ползунок для сравнения ▸",
+    comp_hint: "Тяните ползунок для сравнения",
     faq_tag: "Вопросы и Ответы",
     faq_title: "Часто Задаваемые <span>Вопросы</span>",
     faq_subtitle: "Возникли вопросы по установке или работе? Здесь собраны популярные ответы.",
@@ -2098,12 +2115,12 @@ const TRANSLATIONS = {
     checkout_plan_label: "Выбранный тариф",
     checkout_nick_label: "Игровой никнейм (Minecraft)",
     checkout_email_label: "Email для получения ключа и чека",
-    checkout_methods_note: "💳 Доступные методы оплаты:",
+    checkout_methods_note: "<i class='bi bi-credit-card-2-front-fill'></i> Доступные методы оплаты:",
     method_cards: "Банковские Карты",
     checkout_submit: "Перейти к оплате",
 
     // Profile & Auth
-    prof_back: "← Вернуться на главную",
+    prof_back: "Вернуться на главную",
     prof_tag: "Аккаунт Skyline",
     prof_auth_title: "Авторизация <span>Skyline</span>",
     prof_auth_subtitle: "Войдите в личный кабинет для доступа к подписке чита и ключам",
@@ -2131,16 +2148,16 @@ const TRANSLATIONS = {
     prof_key_label: "Активация по ключу",
     prof_key_ph: "Введите ключ (SKYLINE-LIFE-...)",
     prof_key_btn: "Применить",
-    prof_admin_gen_label: "⚡ Панель создания ключей (Администратор)",
+    prof_admin_gen_label: "<i class='bi bi-key-fill'></i> Панель создания ключей (Администратор)",
     prof_admin_gen_btn: "+ Создать ключ",
     prof_dl_title: "Скачать Skyline Launcher",
     prof_dl_sub: "Официальный инсталлер (installer.exe)",
-    prof_btn_admin: "⚡ Админ-панель",
-    prof_btn_reset_hwid: "⟳ Сбросить привязку HWID",
+    prof_btn_admin: "Админ-панель",
+    prof_btn_reset_hwid: "Сбросить привязку HWID",
     prof_btn_logout: "Выйти из аккаунта",
     auth_err_invalid_login: "Неверный Email или пароль.",
     auth_err_fill_fields: "Заполните все поля для входа.",
-    auth_err_banned: "⛔ Ваш аккаунт заблокирован администратором!",
+    auth_err_banned: "Ваш аккаунт заблокирован администратором!",
     auth_success_login: "Успешный вход! Загрузка профиля...",
     auth_err_server: "Ошибка связи с сервером.",
     auth_err_pass_min: "Пароль должен быть минимум 6 символов.",
@@ -2152,13 +2169,31 @@ const TRANSLATIONS = {
     auth_err_key_required: "Введите лицензионный ключ.",
     auth_err_key_not_found: "Ключ не найден или введен неверно!",
     auth_err_key_used: "Этот ключ уже был активирован ранее!",
-    auth_success_hwid_reset: "✓ Ключ сброса применен! HWID сброшен.",
-    auth_success_key_sub: "✓ Подписка активирована: {sub}!",
+    auth_success_hwid_reset: "Ключ сброса применен! HWID сброшен.",
+    auth_success_key_sub: "Подписка активирована: {sub}!",
     btn_signing_in: "Вход...",
     btn_registering: "Создание...",
     btn_verifying: "Проверка...",
+    prof_modal_title: "Подтвердите действие",
+    prof_modal_msg: "Вы уверены, что хотите сбросить привязку HWID?",
+    prof_modal_cancel: "Отмена",
+    prof_modal_ok: "Да, сбросить",
+
+    // Password Reset
+    reset_back_login: "Вернуться ко входу",
+    reset_tag: "Безопасность",
+    reset_req_title: "Восстановление <span>пароля</span>",
+    reset_req_subtitle: "Введите Email от вашего аккаунта, и мы отправим ссылку для сброса пароля",
+    reset_email_label: "Ваш Email",
+    reset_btn_send: "Отправить ссылку для сброса",
+    reset_remember_pass: "Вспомнили пароль?",
+    reset_link_login: "Войти в аккаунт",
+    reset_new_pass_label: "Новый пароль",
+    reset_confirm_pass_label: "Повторите новый пароль",
+    reset_btn_save: "Сохранить новый пароль",
+
     // Dropdown Plan Options (Key Generator)
-    plan_opt_reset: "🔄 Сброс HWID (HWID Reset)",
+    plan_opt_reset: "Сброс HWID (HWID Reset)",
     plan_opt_7d: "7 Дней (Розыгрыши)",
     plan_opt_30d: "30 Дней",
     plan_opt_365d: "1 Год (365 Дней)",
@@ -2170,17 +2205,17 @@ const TRANSLATIONS = {
     admin_denied_title: "Доступ ограничен",
     admin_denied_desc: "Эта панель предназначена исключительно для администраторов Skyline.<br>Войдите под учетной записью с правами администратора.",
     admin_denied_btn: "Вернуться в личный кабинет",
-    admin_header_title: "⚡ Админ-панель Skyline",
-    admin_back_btn: "← Вернуться в профиль",
+    admin_header_title: "<i class='bi bi-shield-lock-fill'></i> Админ-панель Skyline",
+    admin_back_btn: "В профиль",
     admin_stat_users: "Всего пользователей",
     admin_stat_subs: "Активных подписок",
     admin_stat_hwids: "Привязанных HWID",
     admin_stat_banned: "Заблокированных",
-    admin_maint_title: "⚙️ Статус лаунчера",
+    admin_maint_title: "<i class='bi bi-sliders'></i> Статус лаунчера",
     admin_maint_desc: "Управление режимом технического обслуживания лаунчера Skyline.",
     admin_maint_btn_on: "Включить техработы",
     admin_maint_btn_off: "Отключить техработы",
-    admin_users_title: "👥 Управление пользователями",
+    admin_users_title: "<i class='bi bi-people-fill'></i> Управление пользователями",
     admin_users_search_ph: "Поиск по UID, никнейму или email...",
     admin_refresh_btn: "Обновить",
     admin_col_uid: "UID",
@@ -2192,8 +2227,8 @@ const TRANSLATIONS = {
     admin_col_actions: "Действия",
     admin_loading_users: "Загрузка списка пользователей...",
     admin_users_not_found: "Пользователи не найдены",
-    admin_owner_badge: "★ Владелец",
-    admin_master_lock: "🔒 Главный аккаунт",
+    admin_owner_badge: "<i class='bi bi-award-fill'></i> Владелец",
+    admin_master_lock: "<i class='bi bi-lock-fill'></i> Главный аккаунт",
     admin_sub_grant_btn: "+ Подписка",
     admin_sub_revoke_btn: "Отозвать",
     admin_hwid_reset_btn: "Сброс HWID",
@@ -2203,7 +2238,7 @@ const TRANSLATIONS = {
     admin_remove_admin_btn: "Снять админа",
     admin_status_active: "Активен",
     admin_status_banned: "Заблокирован",
-    admin_grant_title: "💎 Выдача подписки",
+    admin_grant_title: "<i class='bi bi-gem'></i> Выдача подписки",
     admin_grant_desc: "Выберите срок действия подписки для игрока",
     admin_grant_dur_label: "Срок подписки:",
     admin_grant_btn_cancel: "Отмена",
@@ -2251,29 +2286,30 @@ const TRANSLATIONS = {
     toast_maint_disabled: "Режим технических работ ВЫКЛЮЧЕН. Вход открыт для всех.",
 
     // Site Settings Page
-    admin_settings_btn: "⚙️ Настройки сайта",
+    admin_settings_btn: "<i class='bi bi-gear-fill'></i> Настройки сайта",
     settings_page_title: "Настройки сайта",
     settings_page_subtitle: "Управление названием, цветовой палитрой, ценами и описаниями тарифов проекта",
-    settings_back_admin: "← Назад в админ-панель",
-    settings_brand_title: "🏷️ Название и Главный экран",
+    settings_back_admin: "Назад в админ-панель",
+    settings_brand_title: "<i class='bi bi-tag-fill'></i> Название и Главный экран",
     settings_brand_desc: "Отображение бренда в шапке, подвале и главном баннере главной страницы",
     settings_lbl_sitename: "Название проекта (Бренд)",
     settings_lbl_herotitle: "Главный заголовок Hero",
     settings_lbl_herodesc: "Описание на главном экране (Hero)",
-    settings_theme_title: "🎨 Цветовая тема оформления",
+    settings_theme_title: "<i class='bi bi-palette-fill'></i> Цветовая тема оформления",
     settings_theme_desc: "Выберите акцентную палитру — цвет применится ко всем страницам, кнопкам, свечению и элементам",
-    settings_plans_title: "💎 Тарифные планы и Цены",
+    settings_plans_title: "<i class='bi bi-gem'></i> Тарифные планы и Цены",
     settings_plans_desc: "Настройте стоимость и краткие описания карточек в блоке покупки на главной странице",
     settings_lbl_price: "Цена",
     settings_lbl_desc: "Описание тарифа",
-    settings_btn_reset: "🔄 Восстановить стандартные",
-    settings_btn_save: "💾 Сохранить и применить для всех страниц",
+    settings_btn_reset: "Восстановить стандартные",
+    settings_btn_save: "Сохранить и применить для всех страниц",
     settings_saved_title: "Настройки сохранены",
     settings_saved_msg: "Параметры сайта и цветовая тема успешно обновлены для всех страниц!"
   },
   en: {
     // Navigation
     nav_home: "Home",
+    nav_versions: "Versions",
     nav_features: "Features",
     nav_pricing: "Pricing",
     nav_comparison: "Comparison",
@@ -2285,6 +2321,14 @@ const TRANSLATIONS = {
     nav_discord: "Discord",
     nav_to_home: "Home",
     nav_to_profile: "Profile",
+    nav_admin_panel: "Admin Panel",
+
+    // Versions Section
+    versions_tag: "Supported Versions",
+    versions_title: "Ready-to-Play Builds for Any Server",
+    versions_desc: "The client launches straight from the official Skyline launcher in one click. No complex manual setup.",
+    versions_card_desc: "Flagship test build with early access to cutting-edge GrimAC 2.0, Matrix, NoSlow bypasses, enhanced Chams, Wallhack, and adaptive AimAssist for 1.21.4.",
+    versions_btn_launch: "Launch in Launcher",
 
     // Hero Section
     hero_title: "Next-Gen Cheat Client <span>Skyline</span>",
@@ -2306,6 +2350,10 @@ const TRANSLATIONS = {
     feat_3_desc: "Custom movement modules (NoSlow, Velocity 0%, Step, Spider, FastBreak) optimized for GrimAC, Vulcan, Matrix, and Polar.",
     feat_4_title: "HWID Protection & Cloud Configs",
     feat_4_desc: "Hardware binding protects your license from leaks and unauthorized sharing. Instant cloud config saving, loading, and switching.",
+    feat_5_title: "Seamless Launcher",
+    feat_5_desc: "Automatic client file updates, resource caching, and instant license verification straight when launching the game.",
+    feat_6_title: "High Performance",
+    feat_6_desc: "Hardware-accelerated rendering and zero FPS drops even with intense Chams and visual modules enabled.",
 
     // Pricing Section
     price_tag: "Pricing",
@@ -2335,14 +2383,20 @@ const TRANSLATIONS = {
     plan_life_f2: "Anti-cheat bypasses (GrimAC, Vulcan, Matrix)",
     plan_life_f3: "Cloud configs & themes",
     plan_life_f4: "Lifetime cheat client updates",
-    featured_ribbon: "⭐ Most Popular",
+    featured_ribbon: "<i class='bi bi-star-fill'></i> Most Popular",
     btn_buy: "Purchase",
+    plan_buy_btn: "Purchase",
+    plan_buy_lifetime_btn: "Purchase Lifetime",
+    plan_period_once: "one-time",
+    plan_period_30d: "/ 30 days",
+    plan_period_365d: "/ 365 days",
+    plan_period_lifetime: "lifetime",
 
     // Comparison & FAQ
     comp_tag: "Advantage",
     comp_title: "Play <span>With Advantage</span>",
     comp_subtitle: "Compare: the restricted vision of a vanilla player versus full battlefield awareness with Skyline (ESP, Wallhack, HUD, Chams).",
-    comp_hint: "◂ Drag slider to compare ▸",
+    comp_hint: "Drag slider to compare",
     faq_tag: "FAQ",
     faq_title: "Frequently Asked <span>Questions</span>",
     faq_subtitle: "Have questions about installation or setup? Find popular answers below.",
@@ -2371,12 +2425,12 @@ const TRANSLATIONS = {
     checkout_plan_label: "Selected Plan",
     checkout_nick_label: "In-game Nickname (Minecraft)",
     checkout_email_label: "Email for license key & receipt",
-    checkout_methods_note: "💳 Available Payment Methods:",
+    checkout_methods_note: "<i class='bi bi-credit-card-2-front-fill'></i> Available Payment Methods:",
     method_cards: "Credit/Debit Cards",
     checkout_submit: "Proceed to Payment",
 
     // Profile & Auth
-    prof_back: "← Return to Home",
+    prof_back: "Return to Home",
     prof_tag: "Skyline Account",
     prof_auth_title: "Authentication <span>Skyline</span>",
     prof_auth_subtitle: "Sign in to your dashboard to manage cheat subscriptions and keys",
@@ -2404,16 +2458,16 @@ const TRANSLATIONS = {
     prof_key_label: "Key Activation",
     prof_key_ph: "Enter key (SKYLINE-LIFE-...)",
     prof_key_btn: "Redeem",
-    prof_admin_gen_label: "⚡ Key Creation Panel (Admin)",
+    prof_admin_gen_label: "<i class='bi bi-key-fill'></i> Key Creation Panel (Admin)",
     prof_admin_gen_btn: "+ Create Key",
     prof_dl_title: "Download Skyline Launcher",
     prof_dl_sub: "Official installer (installer.exe)",
-    prof_btn_admin: "⚡ Admin Panel",
-    prof_btn_reset_hwid: "⟳ Reset HWID Binding",
+    prof_btn_admin: "Admin Panel",
+    prof_btn_reset_hwid: "Reset HWID Binding",
     prof_btn_logout: "Log Out",
     auth_err_invalid_login: "Invalid email or password.",
     auth_err_fill_fields: "Please fill in all fields.",
-    auth_err_banned: "⛔ Your account has been suspended by an administrator.",
+    auth_err_banned: "Your account has been suspended by an administrator.",
     auth_success_login: "Signed in successfully! Loading profile...",
     auth_err_server: "Server connection error. Please try again.",
     auth_err_pass_min: "Password must be at least 6 characters long.",
@@ -2425,8 +2479,8 @@ const TRANSLATIONS = {
     auth_err_key_required: "Please enter a license key.",
     auth_err_key_not_found: "Key not found or entered incorrectly!",
     auth_err_key_used: "This key has already been redeemed!",
-    auth_success_hwid_reset: "✓ Reset key applied! HWID has been reset.",
-    auth_success_key_sub: "✓ Subscription activated: {sub}!",
+    auth_success_hwid_reset: "Reset key applied! HWID has been reset.",
+    auth_success_key_sub: "Subscription activated: {sub}!",
     btn_signing_in: "Signing in...",
     btn_registering: "Creating...",
     btn_verifying: "Verifying...",
@@ -2435,8 +2489,21 @@ const TRANSLATIONS = {
     prof_modal_cancel: "Cancel",
     prof_modal_ok: "Yes, Reset",
 
+    // Password Reset
+    reset_back_login: "Back to Sign In",
+    reset_tag: "Security",
+    reset_req_title: "Password <span>Recovery</span>",
+    reset_req_subtitle: "Enter the email associated with your account and we will send a password reset link",
+    reset_email_label: "Your Email",
+    reset_btn_send: "Send Reset Link",
+    reset_remember_pass: "Remembered your password?",
+    reset_link_login: "Sign In",
+    reset_new_pass_label: "New Password",
+    reset_confirm_pass_label: "Confirm New Password",
+    reset_btn_save: "Save New Password",
+
     // Dropdown Plan Options (Key Generator)
-    plan_opt_reset: "🔄 HWID Reset",
+    plan_opt_reset: "HWID Reset",
     plan_opt_7d: "7 Days (Giveaways)",
     plan_opt_30d: "30 Days",
     plan_opt_365d: "1 Year (365 Days)",
@@ -2448,17 +2515,17 @@ const TRANSLATIONS = {
     admin_denied_title: "Access Denied",
     admin_denied_desc: "This panel is strictly intended for Skyline administrators.<br>Please log in with an administrator account.",
     admin_denied_btn: "Return to Dashboard",
-    admin_header_title: "⚡ Skyline Admin Panel",
-    admin_back_btn: "← Return to Profile",
+    admin_header_title: "<i class='bi bi-shield-lock-fill'></i> Skyline Admin Panel",
+    admin_back_btn: "Return to Profile",
     admin_stat_users: "Total Users",
     admin_stat_subs: "Active Subscriptions",
     admin_stat_hwids: "Bound HWIDs",
     admin_stat_banned: "Banned Users",
-    admin_maint_title: "⚙️ Launcher Status",
+    admin_maint_title: "<i class='bi bi-sliders'></i> Launcher Status",
     admin_maint_desc: "Manage maintenance mode for the Skyline launcher.",
     admin_maint_btn_on: "Enable Maintenance",
     admin_maint_btn_off: "Disable Maintenance",
-    admin_users_title: "👥 User Management",
+    admin_users_title: "<i class='bi bi-people-fill'></i> User Management",
     admin_users_search_ph: "Search by UID, nickname or email...",
     admin_refresh_btn: "Refresh",
     admin_col_uid: "UID",
@@ -2470,8 +2537,8 @@ const TRANSLATIONS = {
     admin_col_actions: "Actions",
     admin_loading_users: "Loading users list...",
     admin_users_not_found: "No users found",
-    admin_owner_badge: "★ Owner",
-    admin_master_lock: "🔒 Master Account",
+    admin_owner_badge: "<i class='bi bi-award-fill'></i> Owner",
+    admin_master_lock: "<i class='bi bi-lock-fill'></i> Master Account",
     admin_sub_grant_btn: "+ Subscription",
     admin_sub_revoke_btn: "Revoke",
     admin_hwid_reset_btn: "Reset HWID",
@@ -2481,7 +2548,7 @@ const TRANSLATIONS = {
     admin_remove_admin_btn: "Remove Admin",
     admin_status_active: "Active",
     admin_status_banned: "Banned",
-    admin_grant_title: "💎 Grant Subscription",
+    admin_grant_title: "<i class='bi bi-gem'></i> Grant Subscription",
     admin_grant_desc: "Select subscription duration for player",
     admin_grant_dur_label: "Subscription Duration:",
     admin_grant_btn_cancel: "Cancel",
@@ -2529,24 +2596,25 @@ const TRANSLATIONS = {
     toast_maint_disabled: "Maintenance mode DISABLED. User access is open.",
 
     // Site Settings Page
-    admin_settings_btn: "⚙️ Site Settings",
+    admin_settings_btn: "<i class='bi bi-gear-fill'></i> Site Settings",
     settings_page_title: "Site Settings",
     settings_page_subtitle: "Manage brand name, color palette, pricing, and plan descriptions",
-    settings_back_admin: "← Back to Admin Panel",
-    settings_brand_title: "🏷️ Brand & Hero Section",
+    settings_back_admin: "Back to Admin Panel",
+    settings_brand_title: "<i class='bi bi-tag-fill'></i> Brand & Hero Section",
     settings_brand_desc: "Configure project name and header content for the main page",
     settings_lbl_sitename: "Project Name (Brand)",
     settings_lbl_herotitle: "Hero Main Title",
     settings_lbl_herodesc: "Hero Subtitle Description",
-    settings_theme_title: "🎨 Site Color Theme",
+    settings_theme_title: "<i class='bi bi-palette-fill'></i> Site Color Theme",
     settings_theme_desc: "Select an accent color palette — applied globally across all pages, glows, and elements",
-    settings_plans_title: "💎 Plans & Pricing",
+    settings_plans_title: "<i class='bi bi-gem'></i> Plans & Pricing",
     settings_plans_desc: "Configure plan costs and feature highlights on the store page",
     settings_lbl_price: "Price",
     settings_lbl_desc: "Plan Description",
-    settings_btn_reset: "🔄 Reset Defaults",
-    settings_btn_save: "💾 Save & Apply Globally",
+    settings_btn_reset: "Reset Defaults",
+    settings_btn_save: "Save & Apply Globally",
     settings_saved_title: "Settings Saved",
+    settings_saved_msg: "Site parameters and color theme successfully updated across all pages!"
   }
 };
 
@@ -2603,7 +2671,7 @@ function setLanguage(lang) {
             }
           }
         });
-      } else if (val.includes('<span') || val.includes('<br') || val.includes('©') || val.includes('⚡') || val.includes('⟳') || val.includes('💎') || val.includes('⚙️') || val.includes('👥')) {
+      } else if (val.includes('<span') || val.includes('<i') || val.includes('<br') || val.includes('<') || val.includes('©')) {
         el.innerHTML = val;
       } else {
         el.textContent = val;
