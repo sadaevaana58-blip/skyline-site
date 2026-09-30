@@ -1547,18 +1547,50 @@ if (document.readyState === 'loading') {
 
 checkInitialSession();
 
-// Direct Client Download via Supabase Cloud Storage (installer.exe)
+// Secure Client Download via Supabase Storage Signed URL (installer.exe)
 const btnDownloadClient = document.getElementById('btnDownloadClient') || document.getElementById('btn-download-client');
 if (btnDownloadClient) {
-  btnDownloadClient.addEventListener('click', () => {
-    const downloadUrl = 'https://cvincrtbliwmjlxloczi.supabase.co/storage/v1/object/public/dw/installer.exe';
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = 'installer.exe';
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  btnDownloadClient.addEventListener('click', async () => {
+    if (!currentUser) {
+      alert('Пожалуйста, войдите в аккаунт для скачивания лаунчера.');
+      return;
+    }
+
+    const titleEl = btnDownloadClient.querySelector('.dl-title');
+    const origTitle = titleEl ? titleEl.textContent : btnDownloadClient.textContent;
+
+    try {
+      btnDownloadClient.disabled = true;
+      if (titleEl) titleEl.textContent = 'Генерация ссылки...';
+
+      if (!supabaseClient) {
+        throw new Error('Supabase клиент не инициализирован');
+      }
+
+      // Generate a temporary signed URL valid for 60 seconds
+      const { data, error } = await supabaseClient.storage
+        .from('dw')
+        .createSignedUrl('installer.exe', 60);
+
+      if (error || !data || !data.signedUrl) {
+        console.error('Storage error:', error);
+        throw new Error(error?.message || 'Не удалось сформировать ссылку для скачивания');
+      }
+
+      const link = document.createElement('a');
+      link.href = data.signedUrl;
+      link.download = 'installer.exe';
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Download error:', err);
+      alert('Ошибка при скачивании: ' + (err.message || 'Файл недоступен. Проверьте права доступа в Supabase.'));
+    } finally {
+      btnDownloadClient.disabled = false;
+      if (titleEl) titleEl.textContent = origTitle;
+    }
   });
 }
 

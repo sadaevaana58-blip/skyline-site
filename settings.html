@@ -973,16 +973,10 @@
         if (!sb) { showDenied(); return; }
 
         let user = null;
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k && (k.startsWith('sb-') || k.includes('auth-token') || k.includes('supabase'))) {
-            try {
-              const val = JSON.parse(localStorage.getItem(k));
-              if (val?.user) { user = val.user; break; }
-              if (val?.currentSession?.user) { user = val.currentSession.user; break; }
-            } catch(e) {}
-          }
-        }
+        try {
+          const { data } = await withTimeout(sb.auth.getUser(), 1500);
+          user = data?.user;
+        } catch (e) {}
 
         if (!user) {
           try {
@@ -991,9 +985,19 @@
           } catch(e) {}
         }
 
+        if (!user) {
+          try {
+            const raw = localStorage.getItem('sb-cvincrtbliwmjlxloczi-auth-token');
+            if (raw) {
+              const val = JSON.parse(raw);
+              user = val?.user || val?.currentSession?.user;
+            }
+          } catch (e) {}
+        }
+
         if (!user) { showDenied(); return; }
 
-        const email = user.email ? user.email.toLowerCase() : '';
+        const email = user.email ? user.email.trim().toLowerCase() : '';
         const isMasterAdmin = (email === 'gorwok.h@yandex.ru' || email === 'fakeface52@mail.ru');
         let isAdmin = isMasterAdmin;
 

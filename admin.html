@@ -342,6 +342,12 @@
       text-transform: uppercase;
     }
 
+    .admin-badge-role.master-role {
+      background: rgba(234, 179, 8, 0.15);
+      border-color: rgba(234, 179, 8, 0.5);
+      color: #fef08a;
+    }
+
     .btn-settings-nav, .btn-back-profile {
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--border-subtle);
@@ -930,12 +936,53 @@
       <button type="button" class="btn-back-profile" onclick="location.href='profile.html'" data-i18n="admin_denied_btn">Вернуться в личный кабинет</button>
     </div>
 
+    <!-- Admin Password Verification Prompt (for accounts with admin rights) -->
+    <div id="adminPassPromptCard" class="denied-card" style="display:none; border-color: rgba(157, 78, 221, 0.4);">
+      <div class="denied-icon-wrap" style="background: rgba(157, 78, 221, 0.15); border-color: rgba(157, 78, 221, 0.35); color: var(--p-light);">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <h2>Вход в админ-панель</h2>
+      <p>Для подтверждения прав администратора введите пароль доступа.<br><span id="adminAttemptsText" style="color: #fca5a5; font-weight:700;">Осталось попыток: <span id="adminAttemptsCount">3</span> из 3</span></p>
+      <form id="adminPassForm" onsubmit="return false;" style="margin-bottom: 1.25rem;">
+        <input type="password" id="adminPassInput" placeholder="Введите пароль администратора..." style="width:100%; height:46px; background:var(--bg-surface); border:1.5px solid var(--border-subtle); border-radius:12px; padding:0 1rem; color:#fff; font-size:.95rem; margin-bottom:0.75rem; outline:none; text-align:center;" autocomplete="current-password">
+        <div id="adminPassError" style="display:none; color:#f87171; font-size:.85rem; font-weight:600; margin-bottom:0.75rem;"></div>
+        <button type="submit" id="btnAdminPassSubmit" class="btn-settings-nav" style="width:100%; justify-content:center; height:46px; font-size:.95rem;">Войти в панель</button>
+      </form>
+      <button type="button" class="btn-back-profile" onclick="location.href='profile.html'">← Вернуться в профиль</button>
+    </div>
+
+    <!-- Admin Claim Card (for accounts without admin rights: asks for admin password) -->
+    <div id="adminClaimCard" class="denied-card" style="display:none; border-color: rgba(234, 179, 8, 0.4);">
+      <div class="denied-icon-wrap" style="background: rgba(234, 179, 8, 0.15); border-color: rgba(234, 179, 8, 0.35); color: #fde047;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+      </div>
+      <h2 style="color:#fde047;">Запрос прав администратора</h2>
+      <p>У вашей учетной записи нет прав администратора.<br>Введите мастер-пароль для получения прав администратора:</p>
+      <form id="adminClaimForm" onsubmit="return false;" style="margin-bottom: 1.25rem;">
+        <input type="password" id="adminClaimInput" placeholder="Введите мастер-пароль..." style="width:100%; height:46px; background:var(--bg-surface); border:1.5px solid var(--border-subtle); border-radius:12px; padding:0 1rem; color:#fff; font-size:.95rem; margin-bottom:0.75rem; outline:none; text-align:center;" autocomplete="current-password">
+        <div id="adminClaimError" style="display:none; color:#f87171; font-size:.85rem; font-weight:600; margin-bottom:0.75rem;"></div>
+        <button type="submit" id="btnAdminClaimSubmit" class="btn-settings-nav" style="width:100%; justify-content:center; height:46px; font-size:.95rem;">Получить права администратора</button>
+      </form>
+      <button type="button" class="btn-back-profile" onclick="location.href='profile.html'">← Вернуться в профиль</button>
+    </div>
+
+    <!-- Admin Revoked Card (after 3 failed attempts) -->
+    <div id="adminRevokedCard" class="denied-card" style="display:none; border-color: rgba(239, 68, 68, 0.6);">
+      <div class="denied-icon-wrap">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+      </div>
+      <h2>Права администратора отозваны!</h2>
+      <p>Вы трижды ввели неверный пароль администратора.<br>Ваша учетная запись была лишена прав администратора в целях безопасности.</p>
+      <button type="button" class="btn-settings-nav" id="btnRestoreAdminByPass" style="width:100%; justify-content:center; height:46px; font-size:.95rem; margin-bottom:0.75rem;">Восстановить права по мастер-паролю</button>
+      <button type="button" class="btn-back-profile" onclick="location.href='profile.html'">Вернуться в личный кабинет</button>
+    </div>
+
     <div id="adminPanelContent" style="display:none;">
       <div class="admin-header-row">
         <div class="admin-title-wrap">
           <h1>
             <span data-i18n="admin_header_title">⚡ Админ-панель Skyline</span>
-            <span class="admin-badge-role">Master Admin</span>
+            <span class="admin-badge-role" id="adminHeaderBadge">Admin</span>
           </h1>
         </div>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
@@ -1129,17 +1176,69 @@
       const loadingCheck = document.getElementById('adminLoadingCheck');
       const accessDenied = document.getElementById('adminAccessDenied');
       const panelContent = document.getElementById('adminPanelContent');
+      const passPromptCard = document.getElementById('adminPassPromptCard');
+      const claimCard = document.getElementById('adminClaimCard');
+      const revokedCard = document.getElementById('adminRevokedCard');
+
+      const ADMIN_MASTER_PASSWORD = "9053553arc2";
+      let isMasterAdmin = false;
+      let currentAdminUser = null;
+
+      function hideAllStateCards() {
+        if (loadingCheck) loadingCheck.style.display = 'none';
+        if (accessDenied) accessDenied.style.display = 'none';
+        if (panelContent) panelContent.style.display = 'none';
+        if (passPromptCard) passPromptCard.style.display = 'none';
+        if (claimCard) claimCard.style.display = 'none';
+        if (revokedCard) revokedCard.style.display = 'none';
+      }
 
       function showDenied() {
-        if (loadingCheck) loadingCheck.style.display = 'none';
+        hideAllStateCards();
         if (accessDenied) accessDenied.style.display = 'block';
-        if (panelContent) panelContent.style.display = 'none';
       }
 
       function showPanel() {
-        if (loadingCheck) loadingCheck.style.display = 'none';
-        if (accessDenied) accessDenied.style.display = 'none';
+        hideAllStateCards();
         if (panelContent) panelContent.style.display = 'block';
+        const badge = document.getElementById('adminHeaderBadge');
+        if (badge) {
+          if (isMasterAdmin) {
+            badge.textContent = 'Master Admin';
+            badge.className = 'admin-badge-role master-role';
+          } else {
+            badge.textContent = 'Admin';
+            badge.className = 'admin-badge-role';
+          }
+        }
+        loadAdminData();
+        checkTechWorksState();
+      }
+
+      function showPassPrompt() {
+        hideAllStateCards();
+        if (passPromptCard) passPromptCard.style.display = 'block';
+        const pInput = document.getElementById('adminPassInput');
+        if (pInput) setTimeout(() => pInput.focus(), 100);
+      }
+
+      function showClaimCard() {
+        hideAllStateCards();
+        if (claimCard) claimCard.style.display = 'block';
+        const cInput = document.getElementById('adminClaimInput');
+        if (cInput) setTimeout(() => cInput.focus(), 100);
+      }
+
+      function showRevokedCard() {
+        hideAllStateCards();
+        if (revokedCard) revokedCard.style.display = 'block';
+        const btnRestore = document.getElementById('btnRestoreAdminByPass');
+        if (btnRestore) {
+          btnRestore.onclick = () => {
+            sessionStorage.removeItem('admin_attempts_' + (currentAdminUser?.id || ''));
+            showClaimCard();
+          };
+        }
       }
 
       const withTimeout = (promise, ms = 2000) => {
@@ -1156,16 +1255,10 @@
         }
 
         let user = null;
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k && (k.startsWith('sb-') || k.includes('auth-token') || k.includes('supabase'))) {
-            try {
-              const val = JSON.parse(localStorage.getItem(k));
-              if (val?.user) { user = val.user; break; }
-              if (val?.currentSession?.user) { user = val.currentSession.user; break; }
-            } catch(e) {}
-          }
-        }
+        try {
+          const { data } = await withTimeout(sb.auth.getUser(), 1500);
+          user = data?.user;
+        } catch (e) {}
 
         if (!user) {
           try {
@@ -1175,12 +1268,23 @@
         }
 
         if (!user) {
+          try {
+            const raw = localStorage.getItem('sb-cvincrtbliwmjlxloczi-auth-token');
+            if (raw) {
+              const val = JSON.parse(raw);
+              user = val?.user || val?.currentSession?.user;
+            }
+          } catch (e) {}
+        }
+
+        if (!user) {
           showDenied();
           return;
         }
 
-        const email = user.email ? user.email.toLowerCase() : '';
-        const isMasterAdmin = (email === 'gorwok.h@yandex.ru' || email === 'fakeface52@mail.ru');
+        currentAdminUser = user;
+        const email = user.email ? user.email.trim().toLowerCase() : '';
+        isMasterAdmin = (email === 'gorwok.h@yandex.ru' || email === 'fakeface52@mail.ru');
 
         let isAdmin = isMasterAdmin;
 
@@ -1213,12 +1317,169 @@
           isAdmin = isKeyAdmin || isProfAdmin;
         }
 
+        // Case 1: Account does NOT have admin rights -> "запрашивает админку"
         if (!isAdmin) {
-          showDenied();
+          showClaimCard();
+          const claimForm = document.getElementById('adminClaimForm');
+          const claimInput = document.getElementById('adminClaimInput');
+          const claimError = document.getElementById('adminClaimError');
+
+          if (claimForm) {
+            claimForm.onsubmit = async (e) => {
+              e.preventDefault();
+              const entered = (claimInput ? claimInput.value : '').trim();
+
+              if (entered === ADMIN_MASTER_PASSWORD) {
+                if (claimError) claimError.style.display = 'none';
+                const grantHeaders = {
+                  'apikey': SUPABASE_KEY,
+                  'Authorization': 'Bearer ' + SUPABASE_KEY,
+                  'Content-Type': 'application/json',
+                  'Prefer': 'return=minimal'
+                };
+                try {
+                  await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}`, {
+                    method: 'PATCH',
+                    headers: grantHeaders,
+                    body: JSON.stringify({ is_admin: true })
+                  });
+                  await sb.from('profiles').update({ is_admin: true }).eq('id', user.id);
+                  sessionStorage.setItem('admin_pwd_verified_' + user.id, 'true');
+                  sessionStorage.removeItem('admin_attempts_' + user.id);
+                  showToast("Успех", "Права администратора успешно активированы!");
+                  showPanel();
+                } catch (err) {
+                  if (claimError) {
+                    claimError.textContent = "Ошибка при сохранении прав: " + (err.message || err);
+                    claimError.style.display = 'block';
+                  }
+                }
+              } else {
+                if (claimError) {
+                  claimError.textContent = "Неверный мастер-пароль! Доступ не предоставлен.";
+                  claimError.style.display = 'block';
+                }
+                if (claimInput) {
+                  claimInput.focus();
+                  claimInput.select();
+                }
+              }
+            };
+          }
           return;
         }
 
-        showPanel();
+        // Case 2: Account HAS admin rights -> "запрашивает пароль, пароль верный - впускает, не верный - не впускает и снимает админку, 3 попытки надо"
+        const sessionKey = 'admin_pwd_verified_' + user.id;
+        const attemptsKey = 'admin_attempts_' + user.id;
+
+        if (sessionStorage.getItem(sessionKey) === 'true') {
+          showPanel();
+          return;
+        }
+
+        let attempts = parseInt(sessionStorage.getItem(attemptsKey) || '3', 10);
+        if (isNaN(attempts) || attempts > 3) attempts = 3;
+
+        if (attempts <= 0) {
+          showRevokedCard();
+          return;
+        }
+
+        showPassPrompt();
+        const attemptsCountEl = document.getElementById('adminAttemptsCount');
+        if (attemptsCountEl) attemptsCountEl.textContent = attempts;
+
+        const passForm = document.getElementById('adminPassForm');
+        const passInput = document.getElementById('adminPassInput');
+        const passError = document.getElementById('adminPassError');
+
+        if (passForm) {
+          passForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const entered = (passInput ? passInput.value : '').trim();
+
+            if (entered === ADMIN_MASTER_PASSWORD) {
+              if (passError) passError.style.display = 'none';
+              sessionStorage.setItem(sessionKey, 'true');
+              sessionStorage.removeItem(attemptsKey);
+              showToast("Доступ разрешен", "Вход в панель администратора выполнен!");
+              showPanel();
+            } else {
+              attempts--;
+              sessionStorage.setItem(attemptsKey, String(attempts));
+              if (attemptsCountEl) attemptsCountEl.textContent = attempts;
+
+              if (attempts > 0) {
+                if (passError) {
+                  passError.textContent = `Неверный пароль администратора! Осталось попыток: ${attempts}`;
+                  passError.style.display = 'block';
+                }
+                if (passInput) {
+                  passInput.value = '';
+                  passInput.focus();
+                }
+              } else {
+                // 3 failed attempts:
+                if (isMasterAdmin) {
+                  // MASTER ADMIN IS PROTECTED! Do not revoke master admin rights!
+                  if (passError) {
+                    passError.textContent = "Неверный пароль! Мастер-админ защищен от сброса прав.";
+                    passError.style.display = 'block';
+                  }
+                  sessionStorage.setItem(attemptsKey, '3');
+                  attempts = 3;
+                  if (attemptsCountEl) attemptsCountEl.textContent = '3';
+                  return;
+                }
+
+                // REVOKE REGULAR ADMIN RIGHTS!
+                if (passError) passError.style.display = 'none';
+                showRevokedCard();
+
+                const revokeHeaders = {
+                  'apikey': SUPABASE_KEY,
+                  'Authorization': 'Bearer ' + SUPABASE_KEY,
+                  'Content-Type': 'application/json',
+                  'Prefer': 'return=minimal'
+                };
+
+                try {
+                  // 1. Update profiles table: is_admin = false
+                  await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}`, {
+                    method: 'PATCH',
+                    headers: revokeHeaders,
+                    body: JSON.stringify({ is_admin: false })
+                  });
+
+                  // 2. Delete any admin keys by code
+                  await fetch(`${SUPABASE_URL}/rest/v1/license_keys?code=eq.ADMIN_${user.id}`, {
+                    method: 'DELETE',
+                    headers: revokeHeaders
+                  });
+
+                  // 3. Delete any admin keys by used_by email
+                  if (email) {
+                    await fetch(`${SUPABASE_URL}/rest/v1/license_keys?used_by=eq.${encodeURIComponent(email)}`, {
+                      method: 'DELETE',
+                      headers: revokeHeaders
+                    });
+                  }
+
+                  // Fallbacks
+                  await sb.from('profiles').update({ is_admin: false }).eq('id', user.id);
+                  await sb.from('license_keys').delete().eq('code', 'ADMIN_' + user.id);
+                  if (email) await sb.from('license_keys').delete().eq('used_by', email);
+                } catch (err) {
+                  console.error("Failed to revoke admin rights:", err);
+                }
+
+                sessionStorage.removeItem(sessionKey);
+                showToast("Безопасность", "Права администратора аннулированы за 3 неверных ввода пароля!", 6000);
+              }
+            }
+          };
+        }
       } catch (err) {
         console.error("Admin check error:", err);
         showDenied();
@@ -1288,10 +1549,10 @@
         tbody.innerHTML = users.map(u => {
           const uidVal = (u.uid != null && u.uid !== '') ? `#${u.uid}` : '—';
           const nick = u.mc_nickname || u.email?.split('@')[0] || t('prof_player');
-          const email = u.email || '—';
-          const isOwner = email.toLowerCase() === 'gorwok.h@yandex.ru' || email.toLowerCase() === 'fakeface52@mail.ru';
+          const email = (u.email || '—').trim().toLowerCase();
+          const isOwner = email === 'gorwok.h@yandex.ru' || email === 'fakeface52@mail.ru';
           const isBanned = !isOwner && (u.subscription_until === 'BANNED' || u.hwid === 'BANNED');
-          const isAdminUser = isOwner || adminRoleMap.has(u.id);
+          const isAdminUser = isOwner || adminRoleMap.has(u.id) || (u.is_admin === true || u.is_admin === 'true');
           
           let subActive = (u.subscription_active === true || isOwner) && !isBanned;
           let subText = isOwner ? t('dur_lifetime') : (u.subscription_until || t('prof_sub_inactive'));
@@ -1327,7 +1588,7 @@
                 ${hwidVal ? `<span class="hwid-tag" title="${escapeHtml(hwidVal)}">${escapeHtml(hwidVal)}</span>` : `<span style="color:var(--text-dim); font-size:.8rem;">${t('prof_hwid_not_bound')}</span>`}
               </td>
               <td>
-                <span class="badge-status ${isOwner ? 'lifetime' : (isAdminUser ? 'lifetime' : 'inactive')}" ${isOwner ? 'style="border-color:#eab308; color:#fef08a;"' : ''}>
+                <span class="badge-status ${isOwner ? 'lifetime' : (isAdminUser ? 'active' : 'inactive')}" ${isOwner ? 'style="border-color:#eab308; color:#fef08a;"' : ''}>
                   ${isOwner ? 'Master Admin' : (isAdminUser ? 'Admin' : 'User')}
                 </span>
               </td>
@@ -1506,14 +1767,16 @@
         }
       });
 
-      function isMasterAdmin(id) {
+      function isTargetUserMaster(id) {
         const u = allUsers.find(x => x.id === id);
-        return u && u.email && (u.email.toLowerCase() === 'gorwok.h@yandex.ru' || u.email.toLowerCase() === 'fakeface52@mail.ru');
+        if (!u || !u.email) return false;
+        const em = u.email.trim().toLowerCase();
+        return em === 'gorwok.h@yandex.ru' || em === 'fakeface52@mail.ru';
       }
 
       window.revokeSub = (id, encNick) => {
         const nick = decodeURIComponent(encNick);
-        if (isMasterAdmin(id)) {
+        if (isTargetUserMaster(id)) {
           showToast(t('toast_protect_title'), t('toast_protect_revoke'));
           return;
         }
@@ -1552,7 +1815,7 @@
 
       window.toggleBan = (id, encNick, isCurrentlyBanned) => {
         const nick = decodeURIComponent(encNick);
-        if (isMasterAdmin(id)) {
+        if (isTargetUserMaster(id)) {
           showToast(t('toast_protect_title'), t('toast_protect_ban'));
           return;
         }
@@ -1576,7 +1839,7 @@
 
       window.toggleRole = (id, encNick, encEmail, isCurrentlyAdmin) => {
         const nick = decodeURIComponent(encNick);
-        if (isMasterAdmin(id)) {
+        if (isTargetUserMaster(id)) {
           showToast(t('toast_protect_title'), t('toast_protect_role'));
           return;
         }
@@ -1661,9 +1924,6 @@
         renderUsersTable(allUsers);
         updateTechWorksUI();
       });
-
-      loadAdminData();
-      checkTechWorksState();
     }
 
     if (document.readyState === 'loading') {
