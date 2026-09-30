@@ -237,19 +237,13 @@ async function fetchAndRenderProfile() {
       const email = currentUser.email;
       const nick = currentUser.user_metadata?.mc_nickname;
       
-      let query = supabaseClient.from('profiles').select('*');
-      if (email && nick) {
-        query = query.or(`email.eq.${email},mc_nickname.ilike.${nick},id.eq.${currentUser.id}`);
-      } else if (email) {
-        query = query.or(`email.eq.${email},id.eq.${currentUser.id}`);
-      } else {
-        query = query.eq('id', currentUser.id);
-      }
-      
-      const { data: profs, error } = await query.limit(1);
+      const { data: prof, error } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .maybeSingle();
 
-      if (profs && profs.length > 0) {
-        const prof = profs[0];
+      if (prof) {
         if (!currentUser.user_metadata) currentUser.user_metadata = {};
         currentUser.user_metadata.hwid = (prof.hwid && prof.hwid !== 'null') ? prof.hwid : null;
         
@@ -260,6 +254,15 @@ async function fetchAndRenderProfile() {
         if (prof.subscription_until) currentUser.user_metadata.subscription_until = prof.subscription_until;
         if (prof.mc_nickname) currentUser.user_metadata.mc_nickname = prof.mc_nickname;
       }
+
+      // Check admin status in public.admins table
+      const isMasterAdmin = (email && (email.toLowerCase() === 'gorwok.h@yandex.ru' || email.toLowerCase() === 'fakeface52@mail.ru'));
+      let isAdmin = isMasterAdmin;
+      if (!isAdmin) {
+        const { data: adminRow } = await supabaseClient.from('admins').select('user_id').eq('user_id', currentUser.id).maybeSingle();
+        if (adminRow && adminRow.user_id) isAdmin = true;
+      }
+      currentUser._isAdmin = isAdmin;
     } catch (err) {
       console.warn("Error fetching latest profile:", err);
     }
@@ -316,7 +319,7 @@ function renderProfileData() {
   }
 
   // Show admin generator box & HWID reset button strictly for admin
-  const isAdmin = email === 'gorwok.h@yandex.ru' || email === 'fakeface52@mail.ru' || currentUser.user_metadata?.role === 'Admin';
+  const isAdmin = email === 'gorwok.h@yandex.ru' || email === 'fakeface52@mail.ru' || currentUser.user_metadata?.role === 'Admin' || currentUser._isAdmin === true;
   if (adminGenBox) {
     adminGenBox.style.display = isAdmin ? 'block' : 'none';
   }
@@ -398,19 +401,6 @@ if (formLogin) {
           showAlert(authAlert, userMsg, 'error');
         } else {
           showAlert(authAlert, window.getLangString('auth_success_login'), 'success');
-          // Sync profile to table if missing
-          try {
-            const nick = data.user.user_metadata?.mc_nickname || loginInput;
-            await supabaseClient.from('profiles').upsert([
-              {
-                id: data.user.id,
-                email: data.user.email,
-                mc_nickname: nick,
-                subscription_active: data.user.user_metadata?.subscription_active === true,
-                subscription_until: data.user.user_metadata?.subscription_until || 'Не активна'
-              }
-            ], { onConflict: 'id' });
-          } catch (ignored) {}
 
           setTimeout(() => {
             closeModal(authModal);
@@ -502,24 +492,6 @@ if (formRegister) {
         if (error) {
           showAlert(authAlert, error.message, 'error');
         } else {
-          // Save to profiles table
-          if (data.user) {
-            try {
-              await supabaseClient.from('profiles').upsert([
-                {
-                  id: data.user.id,
-                  email: email,
-                  mc_nickname: nickname,
-                  hwid: null,
-                  subscription_active: false,
-                  subscription_until: 'Не активна'
-                }
-              ]);
-            } catch (err) {
-              console.warn("Could not insert profile:", err);
-            }
-          }
-
           showAlert(authAlert, window.getLangString('auth_success_reg'), 'success');
           if (data.user) {
             setTimeout(() => {
@@ -579,98 +551,36 @@ if (formRedeemKey) {
 
     if (supabaseClient) {
       try {
-        const { data: keys, error } = await supabaseClient
-          .from('license_keys')
-          .select('*')
-          .eq('code', keyInput)
-          .limit(1);
+        const { data, error } = await supabaseClient.rpc('redeem_license_key', { p_code: keyInput });
 
-        if (error || !keys || keys.length === 0) {
-          showAlert(profileAlert, window.getLangString('auth_err_key_not_found'), 'error');
-        } else {
-          const keyRecord = keys[0];
-          if (keyRecord.is_used) {
+        if (error) {
+          showAlert(profileAlert, error.message || window.getLangString('auth_err_server'), 'error');
+        } else if (!data || !data.ok) {
+          const errCode = data?.error;
+          if (errCode === 'key_not_found') {
+            showAlert(profileAlert, window.getLangString('auth_err_key_not_found'), 'error');
+          } else if (errCode === 'key_already_used') {
             showAlert(profileAlert, window.getLangString('auth_err_key_used'), 'error');
           } else {
-            // Check if key is a HWID Reset key
-            const isHwidResetKey = keyRecord.duration_days === 0 || (keyRecord.code && (keyRecord.code.startsWith('SKYLINE-RESET-') || keyRecord.code.startsWith('SHAPE-RESET-')));
-
-            if (isHwidResetKey) {
-              // Mark key as used
-              await supabaseClient
-                .from('license_keys')
-                .update({
-                  is_used: true,
-                  used_by: currentUser.user_metadata?.mc_nickname || currentUser.email
-                })
-                .eq('id', keyRecord.id);
-
-              // Reset HWID in auth metadata
-              await supabaseClient.auth.updateUser({
-                data: { hwid: null }
-              });
-
-              // Reset HWID in profiles table
-              try {
-                await supabaseClient
-                  .from('profiles')
-                  .update({ hwid: null })
-                  .eq('id', currentUser.id);
-              } catch (e) {}
-
-              currentUser.user_metadata.hwid = null;
-              renderProfileData();
-              inputLicenseKey.value = '';
-              showAlert(profileAlert, window.getLangString('auth_success_hwid_reset'), 'success');
-            } else {
-              // Regular Subscription Key
-              let subText = 'Навсегда (Lifetime)';
-              if (keyRecord.duration_days < 9000) {
-                const expireDate = new Date();
-                expireDate.setDate(expireDate.getDate() + keyRecord.duration_days);
-                const day = String(expireDate.getDate()).padStart(2, '0');
-                const month = String(expireDate.getMonth() + 1).padStart(2, '0');
-                const year = expireDate.getFullYear();
-                subText = `до ${day}.${month}.${year}`;
-              }
-
-              // Mark key as used
-              await supabaseClient
-                .from('license_keys')
-                .update({
-                  is_used: true,
-                  used_by: currentUser.user_metadata?.mc_nickname || currentUser.email
-                })
-                .eq('id', keyRecord.id);
-
-              // Update user metadata
-              await supabaseClient.auth.updateUser({
-                data: {
-                  subscription_active: true,
-                  subscription_until: subText
-                }
-              });
-
-              // Sync with profiles table for client mod
-              try {
-                await supabaseClient
-                  .from('profiles')
-                  .update({
-                    subscription_active: true,
-                    subscription_until: subText
-                  })
-                  .eq('id', currentUser.id);
-              } catch (err) {
-                console.warn("Could not update profiles table:", err);
-              }
-
+            showAlert(profileAlert, data?.error || window.getLangString('auth_err_server'), 'error');
+          }
+        } else {
+          if (data.type === 'reset') {
+            if (currentUser.user_metadata) currentUser.user_metadata.hwid = null;
+            renderProfileData();
+            inputLicenseKey.value = '';
+            showAlert(profileAlert, window.getLangString('auth_success_hwid_reset'), 'success');
+          } else {
+            const subText = data.until || 'Навсегда (Lifetime)';
+            if (currentUser.user_metadata) {
               currentUser.user_metadata.subscription_active = true;
               currentUser.user_metadata.subscription_until = subText;
-              renderProfileData();
-              inputLicenseKey.value = '';
-              showAlert(profileAlert, `✓ Поздравляем! Подписка успешно активирована (${subText})!`, 'success');
             }
+            renderProfileData();
+            inputLicenseKey.value = '';
+            showAlert(profileAlert, `✓ Поздравляем! Подписка успешно активирована (${subText})!`, 'success');
           }
+          await fetchAndRenderProfile();
         }
       } catch (err) {
         showAlert(profileAlert, 'Ошибка связи с сервером при активации.', 'error');
@@ -796,20 +706,17 @@ if (btnAdminGenKey) {
 
     if (supabaseClient) {
       try {
-        const { error } = await supabaseClient
-          .from('license_keys')
-          .insert([
-            { code: newKeyCode, duration_days: days, is_used: false }
-          ]);
+        const { data: createdKey, error } = await supabaseClient.rpc('admin_create_key', { p_days: days });
 
         if (error) {
           showAlert(profileAlert, `Ошибка создания ключа: ${error.message}`, 'error');
         } else {
+          const finalCode = createdKey || newKeyCode;
           adminLastKeyDisplay.style.display = 'block';
-          adminLastKeyDisplay.setAttribute('data-key', newKeyCode);
-          adminLastKeyDisplay.innerHTML = `✓ Ключ создан (нажмите для копирования): <strong>${newKeyCode}</strong>`;
-          await copyTextToClipboard(newKeyCode);
-          showAlert(profileAlert, `Ключ ${newKeyCode} успешно создан и скопирован в буфер обмена!`, 'success');
+          adminLastKeyDisplay.setAttribute('data-key', finalCode);
+          adminLastKeyDisplay.innerHTML = `✓ Ключ создан (нажмите для копирования): <strong>${finalCode}</strong>`;
+          await copyTextToClipboard(finalCode);
+          showAlert(profileAlert, `Ключ ${finalCode} успешно создан и скопирован в буфер обмена!`, 'success');
         }
       } catch (err) {
         showAlert(profileAlert, 'Ошибка создания ключа в базе данных.', 'error');
@@ -863,17 +770,8 @@ if (btnResetHwid) {
 
     if (supabaseClient) {
       try {
-        const { error } = await supabaseClient.auth.updateUser({
-          data: { hwid: null }
-        });
-
-        // Also reset in profiles table
-        try {
-          await supabaseClient
-            .from('profiles')
-            .update({ hwid: null })
-            .eq('id', currentUser.id);
-        } catch (e) {}
+        const { error } = await supabaseClient.rpc('admin_reset_hwid', { p_uid: currentUser.id });
+        await supabaseClient.auth.updateUser({ data: { hwid: null } });
 
         if (error) {
           showAlert(profileAlert, `Ошибка сброса: ${error.message}`, 'error');
@@ -1029,15 +927,9 @@ function initStandaloneProfilePage() {
     // Pull live HWID and subscription from profiles table
     if (supabaseClient) {
       try {
-        let query = supabaseClient.from('profiles').select('*');
-        if (email && nickname) {
-          query = query.or(`email.eq.${email},mc_nickname.ilike.${nickname},id.eq.${user.id}`);
-        } else {
-          query = query.eq('id', user.id);
-        }
-        const { data: profs } = await query.limit(1);
-        if (profs && profs.length > 0) {
-          prof = profs[0];
+        const { data: profData } = await supabaseClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
+        if (profData) {
+          prof = profData;
           if (prof.hwid && prof.hwid !== 'null' && prof.hwid !== '') {
             hwid = prof.hwid;
             if (!user.user_metadata) user.user_metadata = {};
@@ -1048,12 +940,14 @@ function initStandaloneProfilePage() {
           if (prof.subscription_active !== undefined) rawSubActive = prof.subscription_active;
         }
 
-        // Check if user has an admin license key (ADMIN_id or used_by email)
-        const { data: aKeys } = await supabaseClient.from('license_keys')
-          .select('id, code, used_by')
-          .or(`code.eq.ADMIN_${user.id},used_by.eq.${email}`)
-          .limit(1);
-        if (aKeys && aKeys.length > 0) {
+        // Check admin status in public.admins table
+        const isMaster = (email && (email.toLowerCase() === 'gorwok.h@yandex.ru' || email.toLowerCase() === 'fakeface52@mail.ru'));
+        let isAdm = isMaster;
+        if (!isAdm) {
+          const { data: adminRow } = await supabaseClient.from('admins').select('user_id').eq('user_id', user.id).maybeSingle();
+          if (adminRow && adminRow.user_id) isAdm = true;
+        }
+        if (isAdm) {
           prof = prof || {};
           prof.is_admin = true;
         }
@@ -1239,18 +1133,8 @@ function initStandaloneProfilePage() {
           if (error) {
             showAlert(authAlert, error.message, 'error');
           } else {
+            showAlert(authAlert, window.getLangString('auth_success_reg'), 'success');
             if (data.user) {
-              try {
-                await supabaseClient.from('profiles').upsert([{
-                  id: data.user.id,
-                  email: email,
-                  mc_nickname: nick,
-                  hwid: null,
-                  subscription_active: false,
-                  subscription_until: 'Не активна'
-                }]);
-              } catch (e) {}
-              showAlert(authAlert, window.getLangString('auth_success_reg'), 'success');
               updateHeaderAuth(data.user);
               fetchAndRenderProfile();
             }
@@ -1280,47 +1164,35 @@ function initStandaloneProfilePage() {
 
       if (supabaseClient && currentUser) {
         try {
-          const { data: keys, error } = await supabaseClient
-            .from('license_keys')
-            .select('*')
-            .eq('code', keyVal)
-            .limit(1);
+          const { data, error } = await supabaseClient.rpc('redeem_license_key', { p_code: keyVal });
 
-          if (error || !keys || keys.length === 0) {
-            showAlert(profileAlert, window.getLangString('auth_err_key_not_found'), 'error');
-          } else {
-            const keyRecord = keys[0];
-            if (keyRecord.is_used) {
+          if (error) {
+            showAlert(profileAlert, error.message || window.getLangString('auth_err_server'), 'error');
+          } else if (!data || !data.ok) {
+            const errCode = data?.error;
+            if (errCode === 'key_not_found') {
+              showAlert(profileAlert, window.getLangString('auth_err_key_not_found'), 'error');
+            } else if (errCode === 'key_already_used') {
               showAlert(profileAlert, window.getLangString('auth_err_key_used'), 'error');
             } else {
-              const isReset = keyRecord.duration_days === 0 || keyVal.startsWith('SKYLINE-RESET-') || keyVal.startsWith('SHAPE-RESET-');
-              if (isReset) {
-                await supabaseClient.from('license_keys').update({ is_used: true, used_by: currentUser.user_metadata?.mc_nickname || currentUser.email }).eq('id', keyRecord.id);
-                await supabaseClient.auth.updateUser({ data: { hwid: null } });
-                try { await supabaseClient.from('profiles').update({ hwid: null }).eq('id', currentUser.id); } catch(e){}
-                currentUser.user_metadata.hwid = null;
-                renderStandaloneProfile(currentUser);
-                inputLicenseKey.value = '';
-                showAlert(profileAlert, window.getLangString('auth_success_hwid_reset'), 'success');
-              } else {
-                let subText = 'Навсегда (Lifetime)';
-                if (keyRecord.duration_days < 9000) {
-                  const expireDate = new Date();
-                  expireDate.setDate(expireDate.getDate() + keyRecord.duration_days);
-                  const day = String(expireDate.getDate()).padStart(2, '0');
-                  const month = String(expireDate.getMonth() + 1).padStart(2, '0');
-                  subText = `до ${day}.${month}.${expireDate.getFullYear()}`;
-                }
-                await supabaseClient.from('license_keys').update({ is_used: true, used_by: currentUser.user_metadata?.mc_nickname || currentUser.email }).eq('id', keyRecord.id);
-                await supabaseClient.auth.updateUser({ data: { subscription_active: true, subscription_until: subText } });
-                try { await supabaseClient.from('profiles').update({ subscription_active: true, subscription_until: subText }).eq('id', currentUser.id); } catch(e){}
+              showAlert(profileAlert, data?.error || window.getLangString('auth_err_server'), 'error');
+            }
+          } else {
+            if (data.type === 'reset') {
+              if (currentUser.user_metadata) currentUser.user_metadata.hwid = null;
+              inputLicenseKey.value = '';
+              showAlert(profileAlert, window.getLangString('auth_success_hwid_reset'), 'success');
+            } else {
+              const subText = data.until || 'Навсегда (Lifetime)';
+              if (currentUser.user_metadata) {
                 currentUser.user_metadata.subscription_active = true;
                 currentUser.user_metadata.subscription_until = subText;
-                renderStandaloneProfile(currentUser);
-                inputLicenseKey.value = '';
-                showAlert(profileAlert, window.getLangString('auth_success_key_sub').replace('{sub}', subText), 'success');
               }
+              inputLicenseKey.value = '';
+              showAlert(profileAlert, window.getLangString('auth_success_key_sub').replace('{sub}', subText), 'success');
             }
+            await fetchAndRenderProfile();
+            renderStandaloneProfile(currentUser);
           }
         } catch (err) {
           showAlert(profileAlert, window.getLangString('auth_err_server'), 'error');
@@ -1371,21 +1243,18 @@ function initStandaloneProfilePage() {
 
       if (supabaseClient) {
         try {
-          const { error } = await supabaseClient.from('license_keys').insert([{
-            code: generatedCode,
-            duration_days: days,
-            is_used: false
-          }]);
+          const { data: createdKey, error } = await supabaseClient.rpc('admin_create_key', { p_days: days });
           if (error) {
             showAlert(profileAlert, `Ошибка генерации ключа: ${error.message}`, 'error');
           } else {
+            const finalKey = createdKey || generatedCode;
             if (adminLastKeyDisplay) {
               adminLastKeyDisplay.style.display = 'block';
               adminLastKeyDisplay.innerHTML = `
                 <div class="key-gen-result">
                   <div class="key-gen-info">
                     <span class="key-gen-label">Сгенерированный ключ</span>
-                    <span class="key-gen-code">${generatedCode}</span>
+                    <span class="key-gen-code">${finalKey}</span>
                   </div>
                   <button type="button" class="btn-copy-key" id="btnCopyGenKey">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1401,7 +1270,7 @@ function initStandaloneProfilePage() {
               if (copyBtn) {
                 copyBtn.addEventListener('click', async (e) => {
                   e.stopPropagation();
-                  const copied = await copyTextToClipboard(generatedCode);
+                  const copied = await copyTextToClipboard(finalKey);
                   if (!copied) {
                     showAlert(profileAlert, 'Не удалось скопировать ключ автоматически. Выделите код и скопируйте вручную.', 'error');
                     return;
@@ -1501,11 +1370,15 @@ function initStandaloneProfilePage() {
 
           if (supabaseClient && currentUser) {
             try {
+              const { error } = await supabaseClient.rpc('admin_reset_hwid', { p_uid: currentUser.id });
               await supabaseClient.auth.updateUser({ data: { hwid: null } });
-              try { await supabaseClient.from('profiles').update({ hwid: null }).eq('id', currentUser.id); } catch(e){}
-              currentUser.user_metadata.hwid = null;
-              renderStandaloneProfile(currentUser);
-              showAlert(profileAlert, '✓ ' + (window.getLangString ? window.getLangString('toast_reset_hwid_success').replace('{nick}', currentUser.user_metadata?.mc_nickname || '') : 'HWID сброшен.'), 'success');
+              if (error) {
+                showAlert(profileAlert, `Ошибка сброса: ${error.message}`, 'error');
+              } else {
+                currentUser.user_metadata.hwid = null;
+                renderStandaloneProfile(currentUser);
+                showAlert(profileAlert, '✓ ' + (window.getLangString ? window.getLangString('toast_reset_hwid_success').replace('{nick}', currentUser.user_metadata?.mc_nickname || '') : 'HWID сброшен.'), 'success');
+              }
             } catch (err) {
               showAlert(profileAlert, 'Ошибка связи с сервером при сбросе HWID.', 'error');
             }
@@ -1567,19 +1440,46 @@ if (btnDownloadClient) {
         throw new Error('Supabase клиент не инициализирован');
       }
 
-      // Generate a temporary signed URL valid for 60 seconds
-      const { data, error } = await supabaseClient.storage
-        .from('dw')
-        .createSignedUrl('installer.exe', 60);
+      let downloadUrl = null;
+      let filename = 'skyline.exe';
 
-      if (error || !data || !data.signedUrl) {
-        console.error('Storage error:', error);
-        throw new Error(error?.message || 'Не удалось сформировать ссылку для скачивания');
+      // 1. Try secure Edge Function with JWT verification
+      try {
+        const { data: fnData, error: fnErr } = await supabaseClient.functions.invoke('get-download-url', {
+          body: { file: 'skyline.exe' }
+        });
+        if (!fnErr && fnData && fnData.url) {
+          downloadUrl = fnData.url;
+        }
+      } catch (fnEx) {
+        console.warn('Edge Function get-download-url fallback:', fnEx);
+      }
+
+      // 2. Fallback to Supabase Storage signed URL
+      if (!downloadUrl) {
+        const { data: sData } = await supabaseClient.storage
+          .from('downloads')
+          .createSignedUrl('skyline.exe', 300);
+        if (sData && sData.signedUrl) {
+          downloadUrl = sData.signedUrl;
+        } else {
+          const { data: dwData } = await supabaseClient.storage
+            .from('dw')
+            .createSignedUrl('installer.exe', 300);
+          if (dwData && dwData.signedUrl) {
+            downloadUrl = dwData.signedUrl;
+            filename = 'installer.exe';
+          }
+        }
+      }
+
+      if (!downloadUrl) {
+        throw new Error('Для скачивания требуется активная подписка.');
       }
 
       const link = document.createElement('a');
-      link.href = data.signedUrl;
-      link.download = 'installer.exe';
+      link.href = downloadUrl;
+      link.download = filename;
       link.target = '_blank';
       document.body.appendChild(link);
       link.click();
@@ -2683,7 +2583,28 @@ function setLanguage(lang) {
         }
       }
 
-      if (val.includes('<span') || val.includes('<br') || val.includes('©') || val.includes('⚡') || val.includes('⟳') || val.includes('💎') || val.includes('⚙️') || val.includes('👥')) {
+      if (key === 'hero_desc') {
+        el.textContent = val;
+      } else if (key === 'hero_title') {
+        el.textContent = '';
+        const parts = val.split(/(<\/?span[^>]*>)/i);
+        let inSpan = false;
+        parts.forEach(part => {
+          if (/^<span/i.test(part)) {
+            inSpan = true;
+          } else if (/^<\/span>/i.test(part)) {
+            inSpan = false;
+          } else if (part) {
+            if (inSpan) {
+              const span = document.createElement('span');
+              span.textContent = part;
+              el.appendChild(span);
+            } else {
+              el.appendChild(document.createTextNode(part));
+            }
+          }
+        });
+      } else if (val.includes('<span') || val.includes('<br') || val.includes('©') || val.includes('⚡') || val.includes('⟳') || val.includes('💎') || val.includes('⚙️') || val.includes('👥')) {
         el.innerHTML = val;
       } else {
         el.textContent = val;
@@ -2872,7 +2793,15 @@ function applySiteConfig(config) {
     const brand = config.siteName;
     document.querySelectorAll('.logo span, #headerBrandName, .footer-brand, .footer-logo').forEach(el => {
       if (el.classList.contains('footer-brand') || el.classList.contains('footer-logo')) {
-        el.innerHTML = `<img class="logo-img" src="shape_logo.jpg" alt="Logo" style="width:28px;height:28px;"> ${brand} CLIENT`;
+        el.textContent = '';
+        const img = document.createElement('img');
+        img.className = 'logo-img';
+        img.src = 'shape_logo.jpg';
+        img.alt = 'Logo';
+        img.style.width = '28px';
+        img.style.height = '28px';
+        el.appendChild(img);
+        el.appendChild(document.createTextNode(` ${brand} CLIENT`));
       } else {
         el.textContent = brand;
       }
@@ -2914,9 +2843,9 @@ function applySiteConfig(config) {
   // Step 2: Background sync from Supabase
   if (supabaseClient) {
     try {
-      const { data } = await supabaseClient.from('license_keys').select('used_by').eq('code', 'SITE_SETTINGS').limit(1);
-      if (data && data.length > 0 && data[0].used_by) {
-        const remoteConfig = JSON.parse(data[0].used_by);
+      const { data } = await supabaseClient.from('site_config').select('value').eq('key', 'main').maybeSingle();
+      if (data && data.value) {
+        const remoteConfig = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
         const merged = Object.assign({}, DEFAULT_SITE_CONFIG, remoteConfig);
         localStorage.setItem('skyline_site_config', JSON.stringify(merged));
         applySiteConfig(merged);

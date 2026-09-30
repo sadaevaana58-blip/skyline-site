@@ -1002,32 +1002,15 @@
         let isAdmin = isMasterAdmin;
 
         if (!isAdmin) {
-          let isKeyAdmin = false;
-          let isProfAdmin = false;
-
-          const checkKeyPromise = sb.from('license_keys')
-            .select('id')
-            .or(`code.eq.ADMIN_${user.id},used_by.eq.${email}`)
-            .limit(1)
-            .then(({ data }) => { if (data && data.length > 0) isKeyAdmin = true; })
-            .catch(() => {});
-
-          const checkProfPromise = sb.from('profiles')
-            .select('is_admin')
-            .eq('id', user.id)
-            .limit(1)
-            .then(({ data }) => {
-              if (data && data[0] && (data[0].is_admin === true || data[0].is_admin === 'true')) {
-                isProfAdmin = true;
-              }
-            })
-            .catch(() => {});
-
           try {
-            await withTimeout(Promise.all([checkKeyPromise, checkProfPromise]), 1800);
+            const { data: adminRow } = await withTimeout(
+              sb.from('admins').select('user_id').eq('user_id', user.id).maybeSingle(),
+              2000
+            );
+            if (adminRow && adminRow.user_id) {
+              isAdmin = true;
+            }
           } catch (e) {}
-
-          isAdmin = isKeyAdmin || isProfAdmin;
         }
 
         if (!isAdmin) { showDenied(); return; }
@@ -1091,9 +1074,9 @@
         }
 
         try {
-          const { data } = await sb.from('license_keys').select('used_by').eq('code', 'SITE_SETTINGS').limit(1);
-          if (data && data.length > 0 && data[0].used_by) {
-            currentCfg = JSON.parse(data[0].used_by);
+          const { data } = await sb.from('site_config').select('value').eq('key', 'main').maybeSingle();
+          if (data && data.value) {
+            currentCfg = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
             localStorage.setItem('skyline_site_config', JSON.stringify(currentCfg));
           }
         } catch(e){}
@@ -1160,26 +1143,16 @@
         }
 
         try {
-          // Check if record exists
-          const { data: existing } = await sb.from('license_keys').select('id').eq('code', 'SITE_SETTINGS').limit(1);
-          if (existing && existing.length > 0) {
-            await sb.from('license_keys').update({
-              used_by: jsonPayload,
-              is_used: true
-            }).eq('code', 'SITE_SETTINGS');
-          } else {
-            await sb.from('license_keys').insert([{
-              code: 'SITE_SETTINGS',
-              duration_days: 1,
-              is_used: true,
-              used_by: jsonPayload
-            }]);
-          }
-
+          const { error } = await sb.from('site_config').upsert({
+            key: 'main',
+            value: updatedConfig,
+            updated_at: new Date().toISOString()
+          });
+          if (error) throw error;
           showToast(t('settings_saved_title'), t('settings_saved_msg'));
         } catch(err) {
           console.error("Save config error:", err);
-          showToast(t('settings_saved_title'), t('settings_saved_msg'));
+          showToast(t('settings_saved_title'), 'Ошибка: ' + (err.message || 'Не удалось сохранить'));
         }
 
         btn.disabled = false;
