@@ -273,7 +273,8 @@
           easing: 'easeOutBack(1.2)',
           offset: '-=250'
         })
-        .add({
+      if (window.innerWidth >= 768 && document.getElementById('heroCard')) {
+        heroTimeline.add({
           targets: '#heroCard',
           translateY: [28, 0],
           scale: [0.96, 1],
@@ -282,6 +283,7 @@
           easing: 'easeOutQuint',
           offset: '-=250'
         });
+      }
     }
 
     // =========================================================================
